@@ -816,7 +816,7 @@ function BreakdownTable({
             return (
               <div
                 key={fullName}
-                className="flex items-center gap-3 px-4 py-2 hover:bg-surface-2 transition-colors text-xs"
+                className="flex items-center gap-3 px-4 h-8 hover:bg-surface-2 transition-colors text-xs border-b border-subtle/40 last:border-b-0"
               >
                 <div className="flex w-4 h-4 shrink-0 items-center justify-center">
                   {renderIcon ? (
@@ -902,7 +902,7 @@ function TrafficHeatmap({ heatmap }: { heatmap: number[][] }) {
 
       <div className="p-3">
         <div className="space-y-1">
-          <div className="grid grid-cols-[36px_1fr] items-center gap-x-2 mb-1">
+          <div className="grid grid-cols-[40px_1fr] items-center gap-x-2 mb-1">
             <span className="text-[10px] text-muted text-right pr-1">Time</span>
             <div className="grid grid-cols-7 text-center text-[10px] text-muted">
               {DAYS.map((d) => (
@@ -914,7 +914,7 @@ function TrafficHeatmap({ heatmap }: { heatmap: number[][] }) {
           {Array.from({ length: 24 }).map((_, hIdx) => {
             const showLabel = hIdx % 3 === 0;
             return (
-              <div key={hIdx} className="grid grid-cols-[36px_1fr] items-center gap-x-2">
+              <div key={hIdx} className="grid grid-cols-[40px_1fr] items-center gap-x-2">
                 <span className="text-[10px] text-muted text-right pr-1 shrink-0 leading-none">
                   {showLabel ? HOURS[hIdx] : ""}
                 </span>
