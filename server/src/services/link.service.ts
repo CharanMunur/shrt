@@ -2,6 +2,8 @@ import { nanoid } from "nanoid";
 import { Types } from "mongoose";
 import { Link } from "../models/Link.js";
 import { ClickEvent } from "../models/ClickEvent.js";
+import { Counter, getNextSequence } from "../models/Counter.js";
+import { toBase62 } from "../lib/base62.js";
 import { hashPassword } from "../lib/argon.js";
 import { isReservedCode } from "../lib/reservedCodes.js";
 import { CreateLinkInput, UpdateLinkInput } from "../validators/link.validator.js";
@@ -9,8 +11,9 @@ import { env } from "../config/env.js";
 
 export class LinkService {
   async generateUniqueCode(): Promise<string> {
-    for (let attempts = 0; attempts < 10; attempts++) {
-      const candidate = nanoid(7).toLowerCase();
+    for (let attempts = 0; attempts < 50; attempts++) {
+      const seq = await getNextSequence("link_code");
+      const candidate = toBase62(seq);
       if (isReservedCode(candidate)) continue;
       const exists = await Link.exists({ code: candidate });
       if (!exists) return candidate;
@@ -19,7 +22,7 @@ export class LinkService {
   }
 
   async createLink(ownerId: Types.ObjectId, input: CreateLinkInput) {
-    let code = input.code?.trim().toLowerCase();
+    let code = input.code?.trim();
 
     if (code) {
       if (isReservedCode(code)) {

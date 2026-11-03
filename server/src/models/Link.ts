@@ -13,7 +13,6 @@ const LinkSchema = new Schema<ILink>(
       type: String,
       required: true,
       unique: true,
-      lowercase: true,
       trim: true,
       index: true,
     },

@@ -14,7 +14,7 @@ export const createLinkSchema = z.object({
   code: z
     .string()
     .trim()
-    .min(3, "Custom code must be at least 3 characters")
+    .min(1, "Custom code must be at least 1 character")
     .max(30, "Custom code cannot exceed 30 characters")
     .regex(/^[a-zA-Z0-9_-]+$/, "Code may only contain letters, numbers, underscores, and hyphens")
     .refine((val) => !isReservedCode(val), {

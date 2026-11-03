@@ -18,10 +18,13 @@ export interface RedirectResult {
 
 export class RedirectService {
   async resolveLink(code: string, req: Request, providedPassword?: string): Promise<RedirectResult> {
-    const link = await Link.findOne({ code: code.toLowerCase() }).select("+passwordHash");
+    const trimmedCode = code.trim();
+    const link =
+      (await Link.findOne({ code: trimmedCode }).select("+passwordHash")) ||
+      (await Link.findOne({ code: trimmedCode.toLowerCase() }).select("+passwordHash"));
 
     if (!link) {
-      return { status: "unavailable", reason: "not_found", code };
+      return { status: "unavailable", reason: "not_found", code: trimmedCode };
     }
 
     if (!link.isActive) {

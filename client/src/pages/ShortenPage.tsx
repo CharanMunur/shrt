@@ -178,7 +178,7 @@ export function ShortenPage() {
                 id="custom-code"
                 type="text"
                 value={code}
-                onChange={(e) => setCode(e.target.value.toLowerCase().replace(/[^a-z0-9_-]/g, ""))}
+                onChange={(e) => setCode(e.target.value.replace(/[^a-zA-Z0-9_-]/g, ""))}
                 placeholder="my-link"
                 className="input-minimal rounded-l-none"
               />

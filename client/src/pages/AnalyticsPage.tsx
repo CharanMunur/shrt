@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState, useMemo, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import {
   Loader2,
@@ -17,6 +17,7 @@ import {
   Compass,
   Clock,
   Globe,
+  User,
 } from "lucide-react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
 import { WorldMap } from "../components/WorldMap.js";
@@ -107,7 +108,7 @@ export function AnalyticsPage() {
 
   const handleCopyShortUrl = () => {
     if (!analytics) return;
-    const fullUrl = `${window.location.origin}/${analytics.shortCode || selectedCode}`;
+    const fullUrl = analytics.shortUrl || `${window.location.origin}/${analytics.shortCode || selectedCode}`;
     navigator.clipboard.writeText(fullUrl);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
@@ -412,43 +413,33 @@ export function AnalyticsPage() {
             </div>
           </div>
 
-          {/* Section 4 & 5: Client Environment & Geographic Origin */}
+          {/* Section 4 & 5: Environment & Location cards */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-            {/* Section 4: Client Environment Panel */}
-            <div className="card-minimal p-0 overflow-hidden flex flex-col h-[400px]">
-              <div className="px-4 py-3 border-b border-subtle flex items-center justify-between shrink-0">
-                <span className="text-xs font-semibold text-primary">Client environment</span>
-                <button
-                  type="button"
-                  onClick={() => setExpandedTab(tabEnvironment)}
-                  className="flex items-center gap-1 text-[11px] text-secondary hover:text-primary transition-colors cursor-pointer"
-                >
-                  <Maximize2 className="w-3 h-3" />
-                  <span>View all</span>
-                </button>
-              </div>
+            {/* Section 4: Environment Panel */}
+            <div className="card-minimal p-5 flex flex-col">
+              <h3 className="text-base font-semibold text-primary">Environment</h3>
 
               {/* Tabs */}
-              <div className="flex border-b border-subtle bg-surface-2 px-4 gap-4 shrink-0">
+              <div className="flex border-b border-subtle gap-6 mt-3">
                 {(["browsers", "os", "devices", "sources"] as const).map((tab) => {
                   const active = tabEnvironment === tab;
                   const label =
                     tab === "browsers"
-                      ? "Browser"
+                      ? "Browsers"
                       : tab === "os"
-                      ? "Operating system"
+                      ? "OS"
                       : tab === "devices"
-                      ? "Device"
-                      : "Referrers";
+                      ? "Devices"
+                      : "Sources";
                   return (
                     <button
                       key={tab}
                       type="button"
                       onClick={() => setTabEnvironment(tab)}
-                      className={`text-xs py-2.5 border-b-2 font-medium transition-colors cursor-pointer ${
+                      className={`text-xs pb-2 font-medium transition-colors cursor-pointer border-b-2 -mb-px ${
                         active
-                          ? "border-primary text-primary"
-                          : "border-transparent text-muted hover:text-primary"
+                          ? "border-primary text-primary font-semibold"
+                          : "border-transparent text-muted hover:text-primary font-normal"
                       }`}
                     >
                       {label}
@@ -458,7 +449,7 @@ export function AnalyticsPage() {
               </div>
 
               {/* Table Content */}
-              <div className="flex-1 min-h-0 overflow-y-auto">
+              <div className="flex-1 min-h-0">
                 {tabEnvironment === "browsers" && (
                   <BreakdownTable
                     title="Browser"
@@ -469,7 +460,7 @@ export function AnalyticsPage() {
                 )}
                 {tabEnvironment === "os" && (
                   <BreakdownTable
-                    title="Operating system"
+                    title="Operating System"
                     entries={osEntries.slice(0, 5)}
                     total={total}
                     getIcon={getOsIcon}
@@ -490,31 +481,33 @@ export function AnalyticsPage() {
                 )}
                 {tabEnvironment === "sources" && (
                   <BreakdownTable
-                    title="Source category"
+                    title="Source"
                     entries={referrerCategoryEntries.slice(0, 5)}
                     total={total}
                     renderIcon={() => <Compass className="w-4 h-4 text-muted" />}
                   />
                 )}
               </div>
-            </div>
 
-            {/* Section 5: Geographic Origin Panel */}
-            <div className="card-minimal p-0 overflow-hidden flex flex-col h-[400px]">
-              <div className="px-4 py-3 border-b border-subtle flex items-center justify-between shrink-0">
-                <span className="text-xs font-semibold text-primary">Geographic origin</span>
+              {/* Card Footer More */}
+              <div className="pt-3 border-t border-subtle flex justify-center mt-3 shrink-0">
                 <button
                   type="button"
-                  onClick={() => setExpandedTab(tabLocation)}
-                  className="flex items-center gap-1 text-[11px] text-secondary hover:text-primary transition-colors cursor-pointer"
+                  onClick={() => setExpandedTab(tabEnvironment)}
+                  className="flex items-center gap-1.5 text-xs text-secondary hover:text-primary transition-colors cursor-pointer"
                 >
-                  <Maximize2 className="w-3 h-3" />
-                  <span>View all</span>
+                  <Maximize2 className="w-3.5 h-3.5" />
+                  <span>More</span>
                 </button>
               </div>
+            </div>
+
+            {/* Section 5: Location Panel */}
+            <div className="card-minimal p-5 flex flex-col">
+              <h3 className="text-base font-semibold text-primary">Location</h3>
 
               {/* Tabs */}
-              <div className="flex border-b border-subtle bg-surface-2 px-4 gap-4 shrink-0">
+              <div className="flex border-b border-subtle gap-6 mt-3">
                 {(["countries", "regions", "cities"] as const).map((tab) => {
                   const active = tabLocation === tab;
                   const label =
@@ -524,10 +517,10 @@ export function AnalyticsPage() {
                       key={tab}
                       type="button"
                       onClick={() => setTabLocation(tab)}
-                      className={`text-xs py-2.5 border-b-2 font-medium transition-colors cursor-pointer ${
+                      className={`text-xs pb-2 font-medium transition-colors cursor-pointer border-b-2 -mb-px ${
                         active
-                          ? "border-primary text-primary"
-                          : "border-transparent text-muted hover:text-primary"
+                          ? "border-primary text-primary font-semibold"
+                          : "border-transparent text-muted hover:text-primary font-normal"
                       }`}
                     >
                       {label}
@@ -537,7 +530,7 @@ export function AnalyticsPage() {
               </div>
 
               {/* Table Content */}
-              <div className="flex-1 min-h-0 overflow-y-auto">
+              <div className="flex-1 min-h-0">
                 {tabLocation === "countries" && (
                   <BreakdownTable
                     title="Country"
@@ -571,39 +564,53 @@ export function AnalyticsPage() {
                   />
                 )}
               </div>
+
+              {/* Card Footer More */}
+              <div className="pt-3 border-t border-subtle flex justify-center mt-3 shrink-0">
+                <button
+                  type="button"
+                  onClick={() => setExpandedTab(tabLocation)}
+                  className="flex items-center gap-1.5 text-xs text-secondary hover:text-primary transition-colors cursor-pointer"
+                >
+                  <Maximize2 className="w-3.5 h-3.5" />
+                  <span>More</span>
+                </button>
+              </div>
             </div>
           </div>
 
-          {/* Section 6 & 7: Geographic Density (World Map) & Hourly Density (Heatmap) */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 items-start">
-            <div className="lg:col-span-2 card-minimal flex flex-col gap-3">
+          {/* Section 6 & 7: Geographic Distribution & Traffic Activity */}
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 items-stretch">
+            {/* Geographic Distribution card */}
+            <div className="lg:col-span-2 card-minimal p-5 flex flex-col justify-between gap-3">
               <div>
-                <h3 className="text-sm font-semibold text-primary">Geographic density</h3>
+                <h3 className="text-base font-semibold text-primary">Geographic Distribution</h3>
                 <p className="text-xs text-secondary mt-0.5">
-                  Visitor distribution across global regions
+                  Visitor click densities visualized across country boundaries.
                 </p>
               </div>
-              <div className="h-[460px] bg-surface-2 rounded-xl border border-subtle overflow-hidden">
+              <div className="h-[360px] bg-surface-2 rounded-xl border border-subtle overflow-hidden relative">
                 <WorldMap countryBreakdown={analytics ? analytics.countryBreakdown : {}} />
               </div>
             </div>
 
+            {/* Traffic Activity card */}
             <div className="lg:col-span-1">
               <TrafficHeatmap heatmap={analytics.trafficHeatmap} />
             </div>
           </div>
 
-          {/* Section 8: Telemetry Stream (No profile/visitor avatars!) */}
+          {/* Section 8: Live Click Log */}
           <div className="card-minimal p-0 overflow-hidden flex flex-col">
-            <div className="px-4 py-3 border-b border-subtle flex items-center justify-between">
+            <div className="px-5 py-4 border-b border-subtle flex items-center justify-between">
               <div>
-                <h3 className="text-sm font-semibold text-primary">Telemetry stream</h3>
+                <h3 className="text-base font-semibold text-primary">Live Click Log</h3>
                 <p className="text-xs text-secondary mt-0.5">
-                  Latest edge routing events for this URL
+                  Real-time click activity stream across global edge locations.
                 </p>
               </div>
-              <span className="text-xs text-muted">
-                {analytics.lastClicks ? analytics.lastClicks.length : 0} events
+              <span className="text-xs text-secondary font-medium bg-surface-2 border border-subtle px-3 py-1 rounded-md">
+                {analytics.lastClicks ? analytics.lastClicks.length : 0} Recent Entries
               </span>
             </div>
 
@@ -614,53 +621,100 @@ export function AnalyticsPage() {
                   <p className="text-xs">No click events recorded</p>
                 </div>
               ) : (
-                analytics.lastClicks.slice(0, 10).map((click: any, i: number) => {
+                analytics.lastClicks.slice(0, 20).map((click: any, i: number) => {
                   const ua = click.userAgent || "";
                   const browserInfo = getBrowserIcon(click.browser || ua);
                   const osInfo = getOsIcon(click.os || ua);
                   const deviceLabel = getDeviceType(click.deviceType || ua);
                   const countryCode = click.country ? getCountryCode(click.country) : null;
                   const relTime = formatRelativeTime(click.clickedAt);
+                  const dateObj = click.clickedAt ? new Date(click.clickedAt) : null;
+                  const yearStr = dateObj ? dateObj.getFullYear().toString() : "";
+                  const ipDisplay =
+                    click.ipAddress && click.ipAddress !== "Unknown" ? click.ipAddress : "Anonymous";
 
                   return (
                     <div
                       key={i}
-                      className="flex items-center justify-between gap-4 px-4 py-2.5 hover:bg-surface-2 transition-colors text-xs"
+                      className="flex items-center justify-between gap-4 px-5 py-3 hover:bg-surface-2/60 transition-colors text-xs"
                     >
-                      <div className="flex items-center gap-3 min-w-0 flex-1">
-                        <span className="text-muted shrink-0 w-24 truncate">
-                          {click.ipAddress || "Anonymous"}
-                        </span>
-
-                        <div className="flex items-center gap-1.5 shrink-0">
-                          {countryCode ? (
-                            <span className={`fi fi-${countryCode} rounded-xs`} title={click.country} />
-                          ) : (
-                            <span className="text-[10px] text-muted">{click.country || "—"}</span>
-                          )}
-                          <span className="text-primary truncate max-w-[140px] hidden sm:inline">
-                            {click.city && click.city !== "Unknown" ? `${click.city}, ` : ""}
-                            {click.country || "Unknown"}
-                          </span>
+                      <div className="flex items-center gap-3.5 min-w-0 flex-1">
+                        {/* Avatar */}
+                        <div className="w-10 h-10 rounded-full bg-surface-2 border border-subtle flex items-center justify-center shrink-0">
+                          <User className="w-5 h-5 text-secondary" />
                         </div>
 
-                        <div className="hidden md:flex items-center gap-2 text-muted shrink-0">
-                          <span>•</span>
-                          <span>{browserInfo?.label || click.browser || "Browser"}</span>
-                          <span>/</span>
-                          <span>{osInfo?.label || click.os || "OS"}</span>
-                          <span>•</span>
-                          <span className="capitalize">{deviceLabel}</span>
-                        </div>
+                        {/* Info */}
+                        <div className="space-y-1 min-w-0 flex-1">
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <span className="font-semibold text-primary">
+                              Visitor ({ipDisplay})
+                            </span>
+                            {countryCode ? (
+                              <span className={`fi fi-${countryCode} rounded-xs`} title={click.country} />
+                            ) : null}
+                            {click.country && click.country !== "Unknown" && (
+                              <span className="text-secondary text-xs">
+                                {click.city && click.city !== "Unknown" ? `${click.city}, ` : ""}
+                                {click.country}
+                              </span>
+                            )}
+                          </div>
 
-                        {click.referrer && click.referrer !== "Direct / Unknown" && (
-                          <span className="text-muted truncate hidden lg:inline ml-auto">
-                            via {click.referrer}
-                          </span>
-                        )}
+                          <div className="flex items-center gap-2 text-secondary text-xs flex-wrap">
+                            {browserInfo && (
+                              <div className="flex items-center gap-1">
+                                <img
+                                  src={browserInfo.url}
+                                  alt=""
+                                  className="w-3.5 h-3.5 object-contain"
+                                />
+                                <span>{browserInfo.label}</span>
+                              </div>
+                            )}
+                            {!browserInfo && click.browser && (
+                              <span>{click.browser}</span>
+                            )}
+
+                            <span>•</span>
+
+                            {osInfo && (
+                              <div className="flex items-center gap-1">
+                                <img
+                                  src={osInfo.url}
+                                  alt=""
+                                  className="w-3.5 h-3.5 object-contain"
+                                />
+                                <span>{osInfo.label}</span>
+                              </div>
+                            )}
+                            {!osInfo && click.os && (
+                              <span>{click.os}</span>
+                            )}
+
+                            <span>•</span>
+
+                            <span className="px-1.5 py-0.5 rounded text-[10px] font-medium uppercase bg-surface-2 border border-subtle text-secondary">
+                              {deviceLabel}
+                            </span>
+
+                            {click.referrer && click.referrer !== "Direct / Unknown" && (
+                              <>
+                                <span className="hidden sm:inline">•</span>
+                                <span className="text-muted truncate hidden sm:inline">
+                                  via {click.referrer}
+                                </span>
+                              </>
+                            )}
+                          </div>
+                        </div>
                       </div>
 
-                      <span className="text-secondary shrink-0 text-right">{relTime}</span>
+                      {/* Timestamp */}
+                      <div className="text-right shrink-0">
+                        <div className="font-semibold text-primary text-xs">{relTime}</div>
+                        {yearStr && <div className="text-[10px] text-muted mt-0.5">{yearStr}</div>}
+                      </div>
                     </div>
                   );
                 })
@@ -794,14 +848,14 @@ function BreakdownTable({
 }) {
   return (
     <div className="flex flex-col h-full">
-      <div className="flex items-center justify-between px-4 py-2 text-xs font-medium text-muted border-b border-subtle bg-surface-2">
+      <div className="flex items-center justify-between text-xs text-muted font-normal px-1 py-1.5 mt-2">
         <span>{title}</span>
-        <span>Clicks</span>
+        <span>Visitors</span>
       </div>
 
-      <div className="flex-1 overflow-y-auto divide-y divide-subtle">
+      <div className="flex-1 overflow-y-auto space-y-0.5">
         {entries.length === 0 ? (
-          <div className="flex flex-col items-center gap-1 py-10 text-muted">
+          <div className="flex flex-col items-center justify-center py-10 text-muted">
             <p className="text-xs">No records available</p>
           </div>
         ) : (
@@ -816,32 +870,34 @@ function BreakdownTable({
             return (
               <div
                 key={fullName}
-                className="flex items-center gap-3 px-4 h-8 hover:bg-surface-2 transition-colors text-xs border-b border-subtle/40 last:border-b-0"
+                className="flex items-center justify-between py-1.5 px-1 hover:bg-surface-2/60 rounded-md transition-colors text-xs"
               >
-                <div className="flex w-4 h-4 shrink-0 items-center justify-center">
-                  {renderIcon ? (
-                    renderIcon(displayName)
-                  ) : regionCityFlagCode ? (
-                    <span className={`fi fi-${regionCityFlagCode} rounded-xs`} />
-                  ) : iconData ? (
-                    <img
-                      src={iconData.url}
-                      alt={iconData.label}
-                      className="w-3.5 h-3.5 object-contain"
-                      loading="lazy"
-                    />
-                  ) : (
-                    <span className="text-[10px] text-muted">{displayName.charAt(0)}</span>
-                  )}
+                <div className="flex items-center gap-2.5 min-w-0 flex-1">
+                  <div className="flex w-4 h-4 shrink-0 items-center justify-center">
+                    {renderIcon ? (
+                      renderIcon(displayName)
+                    ) : regionCityFlagCode ? (
+                      <span className={`fi fi-${regionCityFlagCode} rounded-xs`} />
+                    ) : iconData ? (
+                      <img
+                        src={iconData.url}
+                        alt=""
+                        className="w-3.5 h-3.5 object-contain"
+                        loading="lazy"
+                      />
+                    ) : (
+                      <span className="text-[10px] text-muted">{displayName.charAt(0)}</span>
+                    )}
+                  </div>
+
+                  <span className="font-normal text-primary truncate">
+                    {displayName || "Unknown"}
+                  </span>
                 </div>
 
-                <span className="flex-1 font-medium text-primary truncate">
-                  {displayName || "Unknown"}
-                </span>
-
-                <div className="flex items-center gap-2 shrink-0">
-                  <span className="text-primary font-medium">{count.toLocaleString()}</span>
-                  <span className="text-secondary text-[11px] w-8 text-right">{totalPct}%</span>
+                <div className="flex items-center gap-3 shrink-0">
+                  <span className="text-primary font-semibold">{count.toLocaleString()}</span>
+                  <span className="text-muted text-xs w-8 text-right">{totalPct}%</span>
                 </div>
               </div>
             );
@@ -853,27 +909,34 @@ function BreakdownTable({
 }
 
 function TrafficHeatmap({ heatmap }: { heatmap: number[][] }) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [hoveredCell, setHoveredCell] = useState<{
+    day: string;
+    hour: string;
+    count: number;
+    x: number;
+    y: number;
+  } | null>(null);
+
   const DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
   const HOURS = [
-    "12a", "1a", "2a", "3a", "4a", "5a", "6a", "7a", "8a", "9a", "10a", "11a",
-    "12p", "1p", "2p", "3p", "4p", "5p", "6p", "7p", "8p", "9p", "10p", "11p",
+    "12am", "1am", "2am", "3am", "4am", "5am", "6am", "7am", "8am", "9am", "10am", "11am",
+    "12pm", "1pm", "2pm", "3pm", "4pm", "5pm", "6pm", "7pm", "8pm", "9pm", "10pm", "11pm",
   ];
 
   const localHeatmap = useMemo(() => {
     const shifted = Array.from({ length: 7 }, () => Array(24).fill(0));
     if (!heatmap) return shifted;
 
-    const timezoneOffsetMinutes = new Date().getTimezoneOffset();
+    const offsetHours = Math.round(-new Date().getTimezoneOffset() / 60);
 
     for (let d = 0; d < 7; d++) {
       for (let h = 0; h < 24; h++) {
         const count = heatmap[d]?.[h] ?? 0;
         if (count > 0) {
-          let totalMinutes = (d * 24 + h) * 60 + 30 - timezoneOffsetMinutes;
-          totalMinutes = ((totalMinutes % 10080) + 10080) % 10080;
-          const totalHours = Math.floor(totalMinutes / 60);
-          const localD = Math.floor(totalHours / 24);
-          const localH = totalHours % 24;
+          const totalH = ((d * 24 + h + offsetHours) % 168 + 168) % 168;
+          const localD = Math.floor(totalH / 24);
+          const localH = totalH % 24;
           shifted[localD][localH] += count;
         }
       }
@@ -894,51 +957,93 @@ function TrafficHeatmap({ heatmap }: { heatmap: number[][] }) {
   }, [localHeatmap]);
 
   return (
-    <div className="card-minimal p-0 overflow-hidden flex flex-col">
-      <div className="px-4 py-3 border-b border-subtle">
-        <h3 className="text-sm font-semibold text-primary">Hourly density</h3>
-        <p className="text-xs text-secondary mt-0.5">Distribution across the weekly cycle</p>
+    <div
+      ref={containerRef}
+      onMouseLeave={() => setHoveredCell(null)}
+      className="card-minimal p-5 flex flex-col justify-between h-full relative"
+    >
+      <div className="mb-2 shrink-0">
+        <h3 className="text-base font-semibold text-primary">Traffic Activity</h3>
+        <p className="text-xs text-secondary mt-0.5">
+          Hourly click activity density across days of the week.
+        </p>
       </div>
 
-      <div className="p-3">
-        <div className="space-y-1">
-          <div className="grid grid-cols-[40px_1fr] items-center gap-x-2 mb-1">
-            <span className="text-[10px] text-muted text-right pr-1">Time</span>
-            <div className="grid grid-cols-7 text-center text-[10px] text-muted">
-              {DAYS.map((d) => (
-                <span key={d}>{d}</span>
-              ))}
-            </div>
+      {/* Floating Tooltip anchored directly to hovered cell with 0ms delay */}
+      {hoveredCell && (
+        <div
+          className="pointer-events-none absolute z-50 -translate-x-1/2 whitespace-nowrap"
+          style={{
+            left: `${hoveredCell.x}px`,
+            top: hoveredCell.y < 50 ? `${hoveredCell.y + 16}px` : `${hoveredCell.y - 28}px`,
+          }}
+        >
+          <div className="bg-zinc-900 text-white text-[11px] font-medium px-2 py-0.5 rounded shadow-lg border border-white/10">
+            {hoveredCell.day} {hoveredCell.hour}: {hoveredCell.count}{" "}
+            {hoveredCell.count === 1 ? "click" : "clicks"}
           </div>
+        </div>
+      )}
 
+      {/* Compact grid with normal spacing */}
+      <div className="flex-1 flex flex-col justify-center min-h-0 pt-2 pb-1">
+        {/* Weekday Column Headers */}
+        <div className="grid grid-cols-[40px_1fr] items-center gap-x-2 shrink-0 mb-1">
+          <span className="text-[10px] text-muted text-right font-medium pr-1">Hour</span>
+          <div className="grid grid-cols-7 text-center text-[10px] text-muted font-medium">
+            {DAYS.map((d) => (
+              <span key={d}>{d}</span>
+            ))}
+          </div>
+        </div>
+
+        {/* 24 Hour Rows */}
+        <div className="flex flex-col gap-1">
           {Array.from({ length: 24 }).map((_, hIdx) => {
-            const showLabel = hIdx % 3 === 0;
+            const showLabel = hIdx % 2 === 0;
             return (
-              <div key={hIdx} className="grid grid-cols-[40px_1fr] items-center gap-x-2">
-                <span className="text-[10px] text-muted text-right pr-1 shrink-0 leading-none">
+              <div
+                key={hIdx}
+                className="grid grid-cols-[40px_1fr] items-center gap-x-2"
+              >
+                <span className="text-[10px] text-muted text-right pr-1 shrink-0 h-3 flex items-center justify-end leading-none">
                   {showLabel ? HOURS[hIdx] : ""}
                 </span>
 
-                <div className="grid grid-cols-7 justify-items-center">
+                <div className="grid grid-cols-7 justify-items-center gap-1 w-full">
                   {Array.from({ length: 7 }).map((_, dIdx) => {
                     const count = localHeatmap[dIdx][hIdx];
                     const intensity = count / maxClicks;
-                    const opacity = count > 0 ? 0.25 + intensity * 0.75 : 1;
+                    const opacity = count > 0 ? Math.max(0.35, intensity) : 1;
+                    const tooltipText = `${DAYS[dIdx]} ${HOURS[hIdx]}: ${count} ${
+                      count === 1 ? "click" : "clicks"
+                    }`;
 
                     return (
                       <div
                         key={dIdx}
-                        className="flex items-center justify-center w-full h-3.5 group relative"
-                        title={count > 0 ? `${DAYS[dIdx]} ${HOURS[hIdx]}: ${count} clicks` : undefined}
+                        className="flex items-center justify-center w-full h-3 cursor-pointer group relative"
+                        title={tooltipText}
+                        onMouseEnter={(e) => {
+                          const containerRect = containerRef.current?.getBoundingClientRect();
+                          if (containerRect) {
+                            const cellRect = e.currentTarget.getBoundingClientRect();
+                            setHoveredCell({
+                              day: DAYS[dIdx],
+                              hour: HOURS[hIdx],
+                              count,
+                              x: cellRect.left - containerRect.left + cellRect.width / 2,
+                              y: cellRect.top - containerRect.top,
+                            });
+                          }
+                        }}
                       >
                         <div
-                          className={`rounded-xs transition-colors ${
-                            count > 0 ? "bg-primary" : "bg-surface-3"
-                          }`}
+                          className="rounded-[2px] w-3 h-2.5 transition-all group-hover:scale-125"
                           style={{
-                            width: "12px",
-                            height: "10px",
-                            opacity: opacity,
+                            backgroundColor:
+                              count > 0 ? "var(--text-primary)" : "var(--surface-3)",
+                            opacity: count > 0 ? opacity : 0.6,
                           }}
                         />
                       </div>

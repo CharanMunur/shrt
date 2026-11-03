@@ -88,6 +88,7 @@ export function createApp() {
   app.use("/api/v1/users", userRoutes);
   app.use("/api/v1/links", linkRoutes);
   app.use("/api/v1/analytics", analyticsRoutes);
+  app.use("/api/v1/redirect", redirectRoutes);
 
   // Short link redirection handler
   app.use("/", redirectRoutes);

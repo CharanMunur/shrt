@@ -114,8 +114,22 @@ export function LandingPage() {
         </section>
       </main>
 
-      <footer className="w-full bg-canvas py-8 text-center text-xs text-muted">
-        <div className="max-w-6xl mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <footer className="w-full bg-canvas py-16 text-center text-xs text-muted relative overflow-hidden">
+        {/* Half logo with blur in footer */}
+        <div className="absolute left-1/2 -bottom-14 sm:-bottom-20 md:-bottom-28 -translate-x-1/2 pointer-events-none select-none opacity-20 dark:opacity-25 blur-[2px] transition-opacity">
+          <img
+            src="/short-black.svg"
+            alt=""
+            className="theme-logo-light w-[480px] sm:w-[680px] md:w-[900px] max-w-none"
+          />
+          <img
+            src="/short-white.svg"
+            alt=""
+            className="theme-logo-dark w-[480px] sm:w-[680px] md:w-[900px] max-w-none"
+          />
+        </div>
+
+        <div className="relative z-10 max-w-6xl mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
           <p>Thoughtfully brief. © shrt</p>
           <p className="text-muted">MongoDB · Express · React · Node.js</p>
         </div>

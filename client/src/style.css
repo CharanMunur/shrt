@@ -150,6 +150,36 @@
 }
 
 /* Design Tokens & Surface Classes */
+.theme-logo-light {
+  display: block;
+}
+.theme-logo-dark {
+  display: none;
+}
+
+:root[data-theme="dark"] .theme-logo-light {
+  display: none !important;
+}
+:root[data-theme="dark"] .theme-logo-dark {
+  display: block !important;
+}
+
+:root[data-theme="light"] .theme-logo-light {
+  display: block !important;
+}
+:root[data-theme="light"] .theme-logo-dark {
+  display: none !important;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .theme-logo-light {
+    display: none !important;
+  }
+  :root:not([data-theme="light"]) .theme-logo-dark {
+    display: block !important;
+  }
+}
+
 .bg-canvas {
   background-color: var(--canvas);
 }

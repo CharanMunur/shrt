@@ -5,12 +5,19 @@ export function BrandLogo({ className = "", to = "/" }: { className?: string; to
   return (
     <Link
       to={to}
-      className={`inline-flex items-center gap-2 text-primary font-semibold text-lg select-none ${className}`}
+      aria-label="shrt home"
+      className={`inline-flex items-center select-none ${className}`}
     >
-      <span className="inline-flex items-center justify-center w-6 h-6 rounded-md bg-primary text-canvas text-xs font-bold">
-        s
-      </span>
-      <span>shrt</span>
+      <img
+        src="/short-black.svg"
+        alt="shrt"
+        className="theme-logo-light h-6 w-auto object-contain"
+      />
+      <img
+        src="/short-white.svg"
+        alt="shrt"
+        className="theme-logo-dark h-6 w-auto object-contain"
+      />
     </Link>
   );
 }

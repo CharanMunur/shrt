@@ -13,6 +13,7 @@ import { LinksPage } from "./pages/LinksPage.js";
 import { AnalyticsPage } from "./pages/AnalyticsPage.js";
 import { QrGalleryPage } from "./pages/QrGalleryPage.js";
 import { SettingsPage } from "./pages/SettingsPage.js";
+import { RedirectPage } from "./pages/RedirectPage.js";
 
 export function App() {
   return (
@@ -42,6 +43,9 @@ export function App() {
             <Route path="settings" element={<SettingsPage />} />
             <Route path="personal-info" element={<Navigate to="/dashboard/settings" replace />} />
           </Route>
+
+          {/* Short code redirection */}
+          <Route path="/:code" element={<RedirectPage />} />
 
           {/* Fallback */}
           <Route path="*" element={<Navigate to="/" replace />} />
