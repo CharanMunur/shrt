@@ -129,14 +129,29 @@ export function parseClientIp(req: Request): string | undefined {
   return req.socket?.remoteAddress;
 }
 
+const LOCALHOST_LOCATION = {
+  country: "India",
+  region: "Telangana",
+  city: "Hyderabad",
+};
+
 export function parseGeoLocation(ip?: string): { country: string; region: string; city: string } {
   if (!ip) {
-    return { country: "Unknown", region: "Unknown", city: "Unknown" };
+    return LOCALHOST_LOCATION;
   }
 
-  // Filter loopback or private ranges - fallback to unknown
-  if (ip === "::1" || ip === "127.0.0.1" || ip.startsWith("192.168.") || ip.startsWith("10.")) {
-    return { country: "Unknown", region: "Unknown", city: "Unknown" };
+  // Fallback to Hyderabad, Telangana, India for localhost testing
+  if (
+    ip === "::1" ||
+    ip === "127.0.0.1" ||
+    ip === "::ffff:127.0.0.1" ||
+    ip.startsWith("192.168.") ||
+    ip.startsWith("10.") ||
+    ip.startsWith("172.16.") ||
+    ip.startsWith("fe80:") ||
+    ip === "localhost"
+  ) {
+    return LOCALHOST_LOCATION;
   }
 
   try {
