@@ -5,7 +5,7 @@ import { KeyRound, User, Palette, Check, AlertCircle, Loader2 } from "lucide-rea
 import { apiRequest, ApiError } from "../lib/api.js";
 
 export function SettingsPage() {
-  const { user, refetchUser } = useAuth();
+  const { user } = useAuth();
 
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
@@ -49,31 +49,31 @@ export function SettingsPage() {
   };
 
   return (
-    <div className="max-w-2xl mx-auto space-y-8">
+    <div className="max-w-2xl mx-auto space-y-7">
       <div>
-        <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight">Account Settings</h1>
-        <p className="text-xs text-alt mt-1">Manage your theme preferences and security.</p>
+        <h1 className="text-2xl sm:text-3xl font-semibold">Account Settings</h1>
+        <p className="text-xs text-secondary mt-1">Manage your theme preferences and security.</p>
       </div>
 
       {/* Account Info */}
       <div className="card-minimal space-y-4">
         <div className="flex items-center gap-3 mb-2">
-          <div className="w-8 h-8 rounded-full bg-surface-2 flex items-center justify-center text-primary">
+          <div className="w-8 h-8 rounded-full bg-surface-2 border border-subtle flex items-center justify-center text-primary">
             <User className="w-4 h-4" />
           </div>
           <div>
             <h2 className="text-sm font-semibold text-primary">Account Identity</h2>
-            <p className="text-xs text-alt">Authenticated via username and password</p>
+            <p className="text-xs text-secondary">Authenticated via username and password</p>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
-          <div className="p-3 bg-surface-2 rounded-xl">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
+          <div className="p-3 bg-surface-2 border border-subtle rounded-xl">
             <span className="text-[11px] text-muted block mb-0.5">Username</span>
-            <span className="text-xs font-mono font-medium text-primary">{user?.username}</span>
+            <span className="text-xs font-medium text-primary">{user?.username}</span>
           </div>
 
-          <div className="p-3 bg-surface-2 rounded-xl">
+          <div className="p-3 bg-surface-2 border border-subtle rounded-xl">
             <span className="text-[11px] text-muted block mb-0.5">Member Since</span>
             <span className="text-xs font-medium text-primary">
               {user?.createdAt ? new Date(user.createdAt).toLocaleDateString() : "Today"}
@@ -85,12 +85,12 @@ export function SettingsPage() {
       {/* Theme Preference */}
       <div className="card-minimal space-y-4">
         <div className="flex items-center gap-3 mb-2">
-          <div className="w-8 h-8 rounded-full bg-surface-2 flex items-center justify-center text-primary">
+          <div className="w-8 h-8 rounded-full bg-surface-2 border border-subtle flex items-center justify-center text-primary">
             <Palette className="w-4 h-4" />
           </div>
           <div>
             <h2 className="text-sm font-semibold text-primary">Appearance</h2>
-            <p className="text-xs text-alt">Select your preferred color theme</p>
+            <p className="text-xs text-secondary">Select your preferred color theme</p>
           </div>
         </div>
 
@@ -102,24 +102,24 @@ export function SettingsPage() {
       {/* Change Password Form */}
       <div className="card-minimal space-y-4">
         <div className="flex items-center gap-3 mb-2">
-          <div className="w-8 h-8 rounded-full bg-surface-2 flex items-center justify-center text-primary">
+          <div className="w-8 h-8 rounded-full bg-surface-2 border border-subtle flex items-center justify-center text-primary">
             <KeyRound className="w-4 h-4" />
           </div>
           <div>
             <h2 className="text-sm font-semibold text-primary">Security & Password</h2>
-            <p className="text-xs text-alt">Update your account password</p>
+            <p className="text-xs text-secondary">Update your account password</p>
           </div>
         </div>
 
         {passwordSuccess && (
-          <div className="p-3 bg-emerald-500/10 text-emerald-500 text-xs rounded-xl flex items-center gap-2">
+          <div className="p-3 bg-emerald-500/10 border border-emerald-500/20 text-emerald-600 dark:text-emerald-400 text-xs rounded-xl flex items-center gap-2">
             <Check className="w-4 h-4" />
             <span>{passwordSuccess}</span>
           </div>
         )}
 
         {passwordError && (
-          <div className="p-3 bg-rose-500/10 text-rose-500 text-xs rounded-xl flex items-center gap-2">
+          <div className="p-3 bg-rose-500/10 border border-rose-500/20 text-rose-600 dark:text-rose-400 text-xs rounded-xl flex items-center gap-2">
             <AlertCircle className="w-4 h-4" />
             <span>{passwordError}</span>
           </div>
@@ -127,7 +127,7 @@ export function SettingsPage() {
 
         <form onSubmit={handlePasswordChange} className="space-y-4 pt-2">
           <div>
-            <label className="block text-xs font-medium text-alt mb-1.5" htmlFor="current-pass">
+            <label className="block text-xs font-medium text-secondary mb-1.5" htmlFor="current-pass">
               Current Password
             </label>
             <input
@@ -143,7 +143,7 @@ export function SettingsPage() {
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-alt mb-1.5" htmlFor="new-pass">
+            <label className="block text-xs font-medium text-secondary mb-1.5" htmlFor="new-pass">
               New Password (min. 8 characters)
             </label>
             <input
@@ -159,7 +159,7 @@ export function SettingsPage() {
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-alt mb-1.5" htmlFor="confirm-pass">
+            <label className="block text-xs font-medium text-secondary mb-1.5" htmlFor="confirm-pass">
               Confirm New Password
             </label>
             <input

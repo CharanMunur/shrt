@@ -61,7 +61,7 @@ export function QrModal({ code, onClose }: QrModalProps) {
     if (!data) return;
     const a = document.createElement("a");
     a.href = data.dataUrl;
-    a.download = `shrtn-${data.code}-qr.png`;
+    a.download = `shrt-${data.code}-qr.png`;
     a.click();
   };
 
@@ -71,7 +71,7 @@ export function QrModal({ code, onClose }: QrModalProps) {
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `shrtn-${data.code}-qr.svg`;
+    a.download = `shrt-${data.code}-qr.svg`;
     a.click();
     URL.revokeObjectURL(url);
   };
@@ -84,22 +84,22 @@ export function QrModal({ code, onClose }: QrModalProps) {
       description={data?.shortUrl || "Scan to open short link"}
     >
       {loading ? (
-        <div className="py-12 flex flex-col items-center justify-center gap-3 text-alt text-sm">
-          <Loader2 className="w-5 h-5 animate-spin" />
-          Generating QR code...
+        <div className="py-12 flex flex-col items-center justify-center gap-2 text-secondary text-xs">
+          <Loader2 className="w-4 h-4 animate-spin text-primary" />
+          <span>Generating QR code...</span>
         </div>
       ) : data ? (
         <div className="flex flex-col items-center">
-          <div className="p-4 bg-white rounded-xl my-4">
+          <div className="p-4 bg-white rounded-xl my-4 border border-subtle">
             <img
               src={data.dataUrl}
               alt={`QR code for ${data.code}`}
-              className="w-56 h-56 object-contain"
+              className="w-52 h-52 object-contain"
             />
           </div>
 
-          <div className="w-full bg-surface-2 rounded-xl p-3 mb-6 text-center">
-            <span className="font-mono text-xs text-primary break-all">{data.shortUrl}</span>
+          <div className="w-full bg-surface-2 border border-subtle rounded-xl p-3 mb-6 text-center">
+            <span className="text-xs text-primary break-all">{data.shortUrl}</span>
           </div>
 
           <div className="flex flex-wrap items-center justify-center gap-2 w-full">
@@ -108,8 +108,8 @@ export function QrModal({ code, onClose }: QrModalProps) {
               onClick={handleCopyLink}
               className="btn btn-secondary text-xs flex-1 min-w-[120px]"
             >
-              {copied ? <Check className="w-3.5 h-3.5 text-green-500" /> : <Copy className="w-3.5 h-3.5" />}
-              {copied ? "Copied" : "Copy link"}
+              {copied ? <Check className="w-3.5 h-3.5 text-emerald-500" /> : <Copy className="w-3.5 h-3.5" />}
+              <span>{copied ? "Copied" : "Copy link"}</span>
             </button>
             <button
               type="button"
@@ -117,7 +117,7 @@ export function QrModal({ code, onClose }: QrModalProps) {
               className="btn btn-secondary text-xs flex-1 min-w-[120px]"
             >
               <Download className="w-3.5 h-3.5" />
-              Download PNG
+              <span>Download PNG</span>
             </button>
             <button
               type="button"
@@ -125,12 +125,12 @@ export function QrModal({ code, onClose }: QrModalProps) {
               className="btn btn-primary text-xs flex-1 min-w-[120px]"
             >
               <Download className="w-3.5 h-3.5" />
-              Download SVG
+              <span>Download SVG</span>
             </button>
           </div>
         </div>
       ) : (
-        <div className="py-8 text-center text-sm text-muted">
+        <div className="py-8 text-center text-xs text-muted">
           Could not load QR code.
         </div>
       )}

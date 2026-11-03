@@ -83,7 +83,7 @@ export function ShortenPage() {
   return (
     <div className="max-w-2xl mx-auto space-y-8">
       <div>
-        <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight">Shorten URL</h1>
+        <h1 className="text-2xl sm:text-3xl font-semibold">Shorten URL</h1>
         <p className="text-xs text-alt mt-1">Create a clean short link with optional rules and redirects.</p>
       </div>
 
@@ -97,10 +97,10 @@ export function ShortenPage() {
             <p className="text-xs text-alt mt-1">Share your short link anywhere.</p>
           </div>
 
-          <div className="p-4 bg-surface-2 rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-4">
+          <div className="p-4 bg-surface-2 border border-subtle rounded-xl flex flex-col sm:flex-row items-center justify-between gap-4">
             <div className="overflow-hidden w-full sm:w-auto">
               <p className="text-xs text-muted mb-0.5">Short URL</p>
-              <p className="font-mono font-semibold text-primary text-base truncate">{createdLink.shortUrl}</p>
+              <p className="font-semibold text-primary text-base truncate">{createdLink.shortUrl}</p>
             </div>
 
             <div className="flex items-center gap-2 w-full sm:w-auto">
@@ -128,7 +128,7 @@ export function ShortenPage() {
             <button
               type="button"
               onClick={resetForm}
-              className="text-alt hover:text-primary transition-colors"
+              className="text-secondary hover:text-primary transition-colors font-medium"
             >
               ← Shorten another URL
             </button>
@@ -146,13 +146,13 @@ export function ShortenPage() {
       ) : (
         <form onSubmit={handleSubmit} className="card-minimal space-y-6">
           {error && (
-            <div className="bg-rose-500/10 text-rose-500 text-xs p-3 rounded-xl font-medium">
+            <div className="bg-rose-500/10 border border-rose-500/20 text-rose-600 dark:text-rose-400 text-xs p-3 rounded-xl font-medium">
               {error}
             </div>
           )}
 
           <div>
-            <label className="block text-xs font-medium text-alt mb-1.5" htmlFor="dest">
+            <label className="block text-xs font-medium text-secondary mb-1.5" htmlFor="dest">
               Destination URL <span className="text-rose-500">*</span>
             </label>
             <input
@@ -167,12 +167,12 @@ export function ShortenPage() {
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-alt mb-1.5" htmlFor="custom-code">
+            <label className="block text-xs font-medium text-secondary mb-1.5" htmlFor="custom-code">
               Custom Short Code (optional)
             </label>
             <div className="flex items-center">
-              <span className="px-3 py-2.5 bg-surface-2 text-muted text-xs font-mono rounded-l-xl">
-                shrtn/
+              <span className="px-3 py-2 bg-surface-2 border border-r-0 border-subtle text-muted text-xs rounded-l-lg">
+                shrt/
               </span>
               <input
                 id="custom-code"
@@ -200,10 +200,10 @@ export function ShortenPage() {
           </div>
 
           {showAdvanced && (
-            <div className="space-y-4 pt-2 border-t-0 bg-surface-2/40 p-4 rounded-xl">
+            <div className="space-y-4 pt-2 bg-surface-2 border border-subtle p-4 rounded-xl">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-medium text-alt mb-1.5" htmlFor="ios-url">
+                  <label className="block text-xs font-medium text-secondary mb-1.5" htmlFor="ios-url">
                     iOS Device Destination
                   </label>
                   <input
@@ -217,7 +217,7 @@ export function ShortenPage() {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-medium text-alt mb-1.5" htmlFor="android-url">
+                  <label className="block text-xs font-medium text-secondary mb-1.5" htmlFor="android-url">
                     Android Device Destination
                   </label>
                   <input
@@ -233,7 +233,7 @@ export function ShortenPage() {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-medium text-alt mb-1.5" htmlFor="expires">
+                  <label className="block text-xs font-medium text-secondary mb-1.5" htmlFor="expires">
                     Expiration Date & Time
                   </label>
                   <input
@@ -246,7 +246,7 @@ export function ShortenPage() {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-medium text-alt mb-1.5" htmlFor="max-clicks">
+                  <label className="block text-xs font-medium text-secondary mb-1.5" htmlFor="max-clicks">
                     Max Allowed Clicks
                   </label>
                   <input
@@ -262,7 +262,7 @@ export function ShortenPage() {
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-alt mb-1.5" htmlFor="link-pass">
+                <label className="block text-xs font-medium text-secondary mb-1.5" htmlFor="link-pass">
                   Password Protection (optional)
                 </label>
                 <input

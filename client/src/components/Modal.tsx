@@ -30,24 +30,24 @@ export function Modal({ isOpen, onClose, title, description, children }: ModalPr
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
       {/* Backdrop */}
       <div
-        className="fixed inset-0 bg-black/50 backdrop-blur-none transition-opacity"
+        className="fixed inset-0 bg-black/60 transition-opacity"
         onClick={onClose}
       />
 
       {/* Modal Surface */}
-      <div className="relative bg-surface-1 rounded-2xl w-full max-w-lg p-6 z-10 max-h-[90vh] overflow-y-auto">
+      <div className="relative bg-surface-1 border border-subtle rounded-2xl w-full max-w-lg p-6 z-10 max-h-[90vh] overflow-y-auto shadow-xl animate-in fade-in zoom-in-95 duration-150">
         <div className="flex items-start justify-between mb-4">
           <div>
-            <h3 className="text-lg font-semibold text-primary">{title}</h3>
-            {description && <p className="text-xs text-alt mt-1">{description}</p>}
+            <h3 className="text-base font-semibold text-primary">{title}</h3>
+            {description && <p className="text-xs text-secondary mt-1">{description}</p>}
           </div>
           <button
             type="button"
             onClick={onClose}
-            className="w-8 h-8 rounded-full bg-surface-2 text-alt hover:text-primary flex items-center justify-center transition-colors"
+            className="w-7 h-7 rounded-lg bg-surface-2 border border-subtle text-secondary hover:text-primary flex items-center justify-center transition-colors"
             aria-label="Close modal"
           >
-            <X className="w-4 h-4" />
+            <X className="w-3.5 h-3.5" />
           </button>
         </div>
 

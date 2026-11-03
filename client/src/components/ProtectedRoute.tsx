@@ -11,7 +11,7 @@ export function ProtectedRoute({ children }: { children: React.ReactNode }) {
       <div className="min-h-screen bg-canvas flex items-center justify-center">
         <div className="flex items-center gap-3 text-alt text-sm">
           <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-          Loading Shrtn...
+          Loading shrt...
         </div>
       </div>
     );

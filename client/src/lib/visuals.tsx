@@ -12,9 +12,9 @@ import {
   Cpu,
   Terminal,
 } from "lucide-react";
-import { getCountryFlagComponent } from "../components/FlagIcons.js";
+import { getCountryFlagComponent, CountryFlag } from "../components/CountryFlag.js";
 
-export { getCountryFlagComponent };
+export { getCountryFlagComponent, CountryFlag };
 
 export function getDeviceVisual(type: string) {
   const t = (type || "").toLowerCase();

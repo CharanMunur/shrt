@@ -60,17 +60,17 @@ export function SignUpPage() {
       <div className="max-w-sm w-full mx-auto my-12">
         <div className="card-minimal">
           <h1 className="text-2xl font-semibold mb-2 text-primary">Create account</h1>
-          <p className="text-xs text-alt mb-6">No email or verification required. Just choose a username.</p>
+          <p className="text-xs text-secondary mb-6">No email or verification required. Just choose a username.</p>
 
           {error && (
-            <div className="bg-rose-500/10 text-rose-500 text-xs p-3 rounded-xl mb-4 font-medium">
+            <div className="bg-rose-500/10 border border-rose-500/20 text-rose-600 dark:text-rose-400 text-xs p-3 rounded-xl mb-4 font-medium">
               {error}
             </div>
           )}
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-xs font-medium text-alt mb-1.5" htmlFor="reg-username">
+              <label className="block text-xs font-medium text-secondary mb-1.5" htmlFor="reg-username">
                 Username
               </label>
               <input
@@ -87,7 +87,7 @@ export function SignUpPage() {
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-alt mb-1.5" htmlFor="reg-password">
+              <label className="block text-xs font-medium text-secondary mb-1.5" htmlFor="reg-password">
                 Password
               </label>
               <div className="relative">
@@ -125,7 +125,7 @@ export function SignUpPage() {
             </button>
           </form>
 
-          <div className="mt-6 pt-6 text-center text-xs text-alt">
+          <div className="mt-6 pt-6 border-t border-subtle text-center text-xs text-secondary">
             Already have an account?{" "}
             <Link to="/signin" className="text-primary font-semibold hover:underline">
               Sign in
@@ -135,7 +135,7 @@ export function SignUpPage() {
       </div>
 
       <footer className="text-center text-xs text-muted max-w-5xl mx-auto w-full">
-        Shrtn · Clean links, zero friction
+        shrt · Clean links, zero friction
       </footer>
     </div>
   );

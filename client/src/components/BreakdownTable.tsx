@@ -6,6 +6,7 @@ import {
   getBrowserVisual,
   getOsVisual,
 } from "../lib/visuals.js";
+import { formatCountryName } from "./CountryFlag.js";
 
 interface BreakdownItem {
   name: string;
@@ -52,7 +53,7 @@ export function BreakdownTable({
           {icon && <span className="text-muted">{icon}</span>}
           {title}
         </h4>
-        <span className="text-xs text-muted font-mono">{items.reduce((s, i) => s + i.count, 0)} total</span>
+        <span className="text-xs text-muted">{items.reduce((s, i) => s + i.count, 0)} total</span>
       </div>
 
       {items.length === 0 ? (
@@ -60,22 +61,26 @@ export function BreakdownTable({
       ) : (
         <div className="space-y-2.5">
           {items.map((item, idx) => (
-            <div key={idx} className="p-2.5 bg-surface-2 rounded-xl space-y-1.5 transition-colors">
+            <div key={idx} className="p-2.5 bg-surface-2 border border-subtle rounded-xl space-y-1.5 transition-colors">
               <div className="flex items-center justify-between text-xs">
                 <div className="flex items-center min-w-0 pr-2">
                   {renderItemVisual(item.name)}
-                  {type !== "browser" && type !== "os" && (
+                  {type === "country" ? (
+                    <span className="text-primary font-medium truncate" title={item.name}>
+                      {formatCountryName(item.name)}
+                    </span>
+                  ) : type !== "browser" && type !== "os" ? (
                     <span className="text-primary font-medium truncate capitalize" title={item.name}>
                       {item.name || "Unknown"}
                     </span>
-                  )}
+                  ) : null}
                 </div>
 
                 <div className="flex items-center gap-2 shrink-0">
-                  <span className="font-mono text-xs font-semibold text-primary">
+                  <span className="text-xs font-semibold text-primary">
                     {item.count.toLocaleString()}
                   </span>
-                  <span className="text-[11px] font-mono text-muted bg-surface-3 px-1.5 py-0.5 rounded-md">
+                  <span className="text-[11px] text-secondary bg-surface-1 border border-subtle px-1.5 py-0.5 rounded-md">
                     {item.percentage}%
                   </span>
                 </div>

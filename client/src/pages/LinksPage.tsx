@@ -154,8 +154,8 @@ export function LinksPage() {
       {/* Title & Actions */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight">My Links</h1>
-          <p className="text-xs text-alt mt-1">Manage and track your shortened URLs.</p>
+          <h1 className="text-2xl sm:text-3xl font-semibold">My Links</h1>
+          <p className="text-xs text-secondary mt-1">Manage, edit, and track your active short URLs.</p>
         </div>
 
         <Link to="/dashboard/shorten" className="btn btn-primary text-xs self-start sm:self-auto">
@@ -181,7 +181,7 @@ export function LinksPage() {
           </button>
         </form>
 
-        <div className="flex items-center gap-1 bg-surface-2 p-1 rounded-full self-start md:self-auto">
+        <div className="flex items-center gap-1 bg-surface-2 p-1 rounded-full border border-subtle self-start md:self-auto">
           {(["all", "active", "inactive"] as const).map((filter) => (
             <button
               key={filter}
@@ -192,7 +192,7 @@ export function LinksPage() {
               }}
               className={`px-3 py-1 text-xs rounded-full capitalize transition-colors ${
                 statusFilter === filter
-                  ? "bg-primary text-canvas font-medium"
+                  ? "bg-primary text-canvas font-medium shadow-xs"
                   : "text-muted hover:text-primary"
               }`}
             >
@@ -205,55 +205,57 @@ export function LinksPage() {
       {/* Links List */}
       <div className="card-minimal">
         {loading ? (
-          <div className="py-20 flex flex-col items-center justify-center gap-3 text-alt text-xs">
-            <Loader2 className="w-5 h-5 animate-spin text-primary" />
+          <div className="py-20 flex flex-col items-center justify-center gap-2 text-secondary text-xs">
+            <Loader2 className="w-4 h-4 animate-spin text-primary" />
             <span>Loading short links...</span>
           </div>
         ) : links.length === 0 ? (
           <div className="py-16 text-center text-xs text-muted space-y-3">
-            <p>No short links found matching your criteria.</p>
+            <p>No short links found matching your search.</p>
             <Link to="/dashboard/shorten" className="btn btn-primary text-xs inline-flex">
               Create a link now
             </Link>
           </div>
         ) : (
-          <div className="space-y-3">
+          <div className="space-y-2.5">
             {links.map((link) => (
               <div
                 key={link._id}
-                className="p-4 bg-surface-2 rounded-2xl flex flex-col lg:flex-row lg:items-center justify-between gap-4 transition-colors"
+                className="p-3.5 bg-surface-2 border border-subtle rounded-xl flex flex-col lg:flex-row lg:items-center justify-between gap-4 transition-all hover:border-text-primary/20"
               >
                 {/* Info block */}
                 <div className="space-y-1.5 overflow-hidden">
                   <div className="flex flex-wrap items-center gap-2">
-                    <span className="font-mono font-semibold text-sm text-primary">/{link.code}</span>
+                    <span className="font-semibold text-xs text-primary">/{link.code}</span>
                     <span
-                      className={`text-[10px] px-2 py-0.5 rounded-full ${
-                        link.isActive ? "bg-emerald-500/10 text-emerald-500" : "bg-zinc-500/10 text-zinc-400"
+                      className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${
+                        link.isActive
+                          ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
+                          : "bg-zinc-500/10 text-zinc-500"
                       }`}
                     >
                       {link.isActive ? "Active" : "Disabled"}
                     </span>
                     {link.isExpired && (
-                      <span className="text-[10px] px-2 py-0.5 rounded-full bg-rose-500/10 text-rose-500">
+                      <span className="text-[10px] px-2 py-0.5 rounded-full bg-rose-500/10 text-rose-600 dark:text-rose-400 font-medium">
                         Expired
                       </span>
                     )}
                     {link.isClickLimitReached && (
-                      <span className="text-[10px] px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-500">
+                      <span className="text-[10px] px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400 font-medium">
                         Limit Reached
                       </span>
                     )}
                     {link.hasPassword && (
-                      <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-surface-3 text-alt">
+                      <span className="text-[10px] px-2 py-0.5 rounded-full bg-surface-3 text-secondary font-medium">
                         Password Protected
                       </span>
                     )}
                   </div>
 
-                  <p className="text-xs text-muted truncate max-w-xl font-mono">{link.destinationUrl}</p>
+                  <p className="text-xs text-muted truncate max-w-xl">{link.destinationUrl}</p>
 
-                  <div className="flex items-center gap-4 text-[11px] text-muted pt-1">
+                  <div className="flex items-center gap-4 text-[11px] text-muted pt-0.5">
                     <span>Created {new Date(link.createdAt).toLocaleDateString()}</span>
                     {link.expiresAt && (
                       <span>Expires {new Date(link.expiresAt).toLocaleDateString()}</span>
@@ -263,16 +265,16 @@ export function LinksPage() {
 
                 {/* Metrics & Actions */}
                 <div className="flex items-center justify-between lg:justify-end gap-3 shrink-0 pt-2 lg:pt-0">
-                  <div className="text-right px-3 py-1 bg-surface-3 rounded-xl">
-                    <span className="font-mono font-semibold text-xs text-primary">{link.clicksCount}</span>
+                  <div className="text-right px-2.5 py-1 bg-surface-1 rounded-lg border border-subtle">
+                    <span className="font-semibold text-xs text-primary">{link.clicksCount}</span>
                     <span className="text-muted ml-1 text-[11px]">clicks</span>
                   </div>
 
-                  <div className="flex items-center gap-1">
+                  <div className="flex items-center gap-1.5">
                     <button
                       type="button"
                       onClick={() => handleCopy(link.code, link.shortUrl)}
-                      className="w-8 h-8 rounded-full bg-surface-3 text-alt hover:text-primary flex items-center justify-center transition-colors"
+                      className="w-8 h-8 rounded-lg bg-surface-1 border border-subtle text-secondary hover:text-primary hover:bg-surface-3 flex items-center justify-center transition-colors"
                       title="Copy short link"
                     >
                       {copiedCode === link.code ? (
@@ -285,7 +287,7 @@ export function LinksPage() {
                     <button
                       type="button"
                       onClick={() => setSelectedQrCode(link.code)}
-                      className="w-8 h-8 rounded-full bg-surface-3 text-alt hover:text-primary flex items-center justify-center transition-colors"
+                      className="w-8 h-8 rounded-lg bg-surface-1 border border-subtle text-secondary hover:text-primary hover:bg-surface-3 flex items-center justify-center transition-colors"
                       title="Show QR Code"
                     >
                       <QrCode className="w-3.5 h-3.5" />
@@ -293,7 +295,7 @@ export function LinksPage() {
 
                     <Link
                       to={`/dashboard/analytics/${link.code}`}
-                      className="w-8 h-8 rounded-full bg-surface-3 text-alt hover:text-primary flex items-center justify-center transition-colors"
+                      className="w-8 h-8 rounded-lg bg-surface-1 border border-subtle text-secondary hover:text-primary hover:bg-surface-3 flex items-center justify-center transition-colors"
                       title="View Click Analytics"
                     >
                       <BarChart3 className="w-3.5 h-3.5" />
@@ -302,7 +304,7 @@ export function LinksPage() {
                     <button
                       type="button"
                       onClick={() => openEditModal(link)}
-                      className="w-8 h-8 rounded-full bg-surface-3 text-alt hover:text-primary flex items-center justify-center transition-colors"
+                      className="w-8 h-8 rounded-lg bg-surface-1 border border-subtle text-secondary hover:text-primary hover:bg-surface-3 flex items-center justify-center transition-colors"
                       title="Edit link settings"
                     >
                       <Edit2 className="w-3.5 h-3.5" />
@@ -311,7 +313,7 @@ export function LinksPage() {
                     <button
                       type="button"
                       onClick={() => handleToggleActive(link)}
-                      className={`w-8 h-8 rounded-full bg-surface-3 flex items-center justify-center transition-colors ${
+                      className={`w-8 h-8 rounded-lg bg-surface-1 border border-subtle flex items-center justify-center transition-colors ${
                         link.isActive ? "text-emerald-500" : "text-muted hover:text-primary"
                       }`}
                       title={link.isActive ? "Click to disable link" : "Click to enable link"}
@@ -322,7 +324,7 @@ export function LinksPage() {
                     <button
                       type="button"
                       onClick={() => setDeletingLink(link)}
-                      className="w-8 h-8 rounded-full bg-surface-3 text-alt hover:text-rose-500 flex items-center justify-center transition-colors"
+                      className="w-8 h-8 rounded-lg bg-surface-1 border border-subtle text-secondary hover:text-rose-500 hover:bg-rose-500/10 flex items-center justify-center transition-colors"
                       title="Delete link"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
@@ -334,7 +336,7 @@ export function LinksPage() {
 
             {/* Pagination Controls */}
             {totalPages > 1 && (
-              <div className="flex items-center justify-between pt-6 border-t-0 text-xs text-alt">
+              <div className="flex items-center justify-between pt-6 border-t border-subtle text-xs text-secondary">
                 <span>
                   Page {page} of {totalPages}
                 </span>
@@ -362,7 +364,6 @@ export function LinksPage() {
         )}
       </div>
 
-      {/* QR Code Modal */}
       <QrModal code={selectedQrCode} onClose={() => setSelectedQrCode(null)} />
 
       {/* Edit Link Modal */}
@@ -374,7 +375,7 @@ export function LinksPage() {
       >
         <form onSubmit={handleSaveEdit} className="space-y-4">
           <div>
-            <label className="block text-xs font-medium text-alt mb-1" htmlFor="edit-dest">
+            <label className="block text-xs font-medium text-secondary mb-1" htmlFor="edit-dest">
               Destination URL
             </label>
             <input
@@ -389,7 +390,7 @@ export function LinksPage() {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-medium text-alt mb-1" htmlFor="edit-ios">
+              <label className="block text-xs font-medium text-secondary mb-1" htmlFor="edit-ios">
                 iOS URL
               </label>
               <input
@@ -402,7 +403,7 @@ export function LinksPage() {
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-alt mb-1" htmlFor="edit-android">
+              <label className="block text-xs font-medium text-secondary mb-1" htmlFor="edit-android">
                 Android URL
               </label>
               <input
@@ -418,7 +419,7 @@ export function LinksPage() {
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-medium text-alt mb-1" htmlFor="edit-expiry">
+              <label className="block text-xs font-medium text-secondary mb-1" htmlFor="edit-expiry">
                 Expires At
               </label>
               <input
@@ -430,7 +431,7 @@ export function LinksPage() {
               />
             </div>
             <div>
-              <label className="block text-xs font-medium text-alt mb-1" htmlFor="edit-max">
+              <label className="block text-xs font-medium text-secondary mb-1" htmlFor="edit-max">
                 Max Clicks
               </label>
               <input
@@ -446,7 +447,7 @@ export function LinksPage() {
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-alt mb-1" htmlFor="edit-pass">
+            <label className="block text-xs font-medium text-secondary mb-1" htmlFor="edit-pass">
               New Password (leave empty to keep current)
             </label>
             <input
@@ -495,7 +496,7 @@ export function LinksPage() {
         description={`Are you sure you want to delete /${deletingLink?.code}?`}
       >
         <div className="space-y-4">
-          <div className="p-3 bg-rose-500/10 text-rose-500 text-xs rounded-xl flex items-start gap-2">
+          <div className="p-3 bg-rose-500/10 text-rose-600 dark:text-rose-400 text-xs rounded-xl flex items-start gap-2 border border-rose-500/20">
             <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" />
             <p>
               This will permanently delete the short link and all associated click analytics data.

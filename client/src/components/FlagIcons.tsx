@@ -216,19 +216,10 @@ export function GlobeFlagIcon({ size = 20, className = "", ...props }: FlagProps
   );
 }
 
-export function getCountryFlagComponent(country: string, size = 18): React.ReactNode {
-  if (!country) return <GlobeFlagIcon size={size} />;
-  const c = country.toLowerCase().trim();
+import { CountryFlag, resolveCountryCode } from "./CountryFlag.js";
 
-  if (c.includes("india")) return <IndiaFlagIcon size={size} />;
-  if (c.includes("united states") || c === "us" || c === "usa") return <UsFlagIcon size={size} />;
-  if (c.includes("united kingdom") || c === "uk" || c === "great britain") return <UkFlagIcon size={size} />;
-  if (c.includes("germany") || c === "deutschland") return <GermanyFlagIcon size={size} />;
-  if (c.includes("japan")) return <JapanFlagIcon size={size} />;
-  if (c.includes("canada")) return <CanadaFlagIcon size={size} />;
-  if (c.includes("france")) return <FranceFlagIcon size={size} />;
-  if (c.includes("brazil")) return <BrazilFlagIcon size={size} />;
-  if (c === "local" || c === "localhost" || c.includes("development")) return <LocalFlagIcon size={size} />;
+export { CountryFlag, resolveCountryCode };
 
-  return <GlobeFlagIcon size={size} />;
+export function getCountryFlagComponent(country: string, _size = 18): React.ReactNode {
+  return <CountryFlag country={country} />;
 }

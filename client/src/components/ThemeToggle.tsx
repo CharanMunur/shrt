@@ -16,19 +16,19 @@ export function ThemeToggle({ compact = false }: { compact?: boolean }) {
       <button
         type="button"
         onClick={cycleTheme}
-        className="w-8 h-8 rounded-full bg-surface-1 text-alt hover:text-primary flex items-center justify-center transition-colors"
+        className="w-7 h-7 rounded-lg bg-surface-2 border border-subtle text-secondary hover:text-primary flex items-center justify-center transition-colors"
         title={`Current theme: ${theme}. Click to switch.`}
         aria-label="Toggle theme"
       >
-        {theme === "light" && <Sun className="w-4 h-4" />}
-        {theme === "dark" && <Moon className="w-4 h-4" />}
-        {theme === "system" && <Laptop className="w-4 h-4" />}
+        {theme === "light" && <Sun className="w-3.5 h-3.5" />}
+        {theme === "dark" && <Moon className="w-3.5 h-3.5" />}
+        {theme === "system" && <Laptop className="w-3.5 h-3.5" />}
       </button>
     );
   }
 
   return (
-    <div className="inline-flex p-1 rounded-full bg-surface-1 gap-1">
+    <div className="inline-flex p-1 rounded-full bg-surface-2 border border-subtle gap-1">
       {(["light", "dark", "system"] as ThemeMode[]).map((mode) => {
         const active = theme === mode;
         return (
@@ -38,7 +38,7 @@ export function ThemeToggle({ compact = false }: { compact?: boolean }) {
             onClick={() => setTheme(mode)}
             className={`px-3 py-1 text-xs rounded-full capitalize transition-all ${
               active
-                ? "bg-primary text-canvas font-medium shadow-none"
+                ? "bg-primary text-canvas font-medium shadow-xs"
                 : "text-muted hover:text-primary"
             }`}
           >

@@ -1,8 +1,8 @@
 import React from "react";
 import {
   ResponsiveContainer,
-  AreaChart,
-  Area,
+  BarChart,
+  Bar,
   XAxis,
   YAxis,
   Tooltip,
@@ -22,7 +22,7 @@ export function TimeSeriesChart({ data, height = 280 }: TimeSeriesChartProps) {
   if (!data || data.length === 0) {
     return (
       <div
-        className="w-full flex items-center justify-center text-sm text-muted bg-surface-1 rounded-2xl"
+        className="w-full flex items-center justify-center text-xs text-muted bg-surface-2 border border-subtle rounded-xl"
         style={{ height }}
       >
         No activity recorded for this period
@@ -42,13 +42,10 @@ export function TimeSeriesChart({ data, height = 280 }: TimeSeriesChartProps) {
   return (
     <div className="w-full" style={{ height }}>
       <ResponsiveContainer width="100%" height="100%">
-        <AreaChart data={formattedData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-          <defs>
-            <linearGradient id="clickGradient" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.25} />
-              <stop offset="95%" stopColor="#3b82f6" stopOpacity={0.0} />
-            </linearGradient>
-          </defs>
+        <BarChart
+          data={formattedData}
+          margin={{ top: 10, right: 10, left: -20, bottom: 0 }}
+        >
           <XAxis
             dataKey="displayDate"
             axisLine={false}
@@ -64,17 +61,15 @@ export function TimeSeriesChart({ data, height = 280 }: TimeSeriesChartProps) {
           />
           <Tooltip
             content={<CustomTooltip />}
-            cursor={{ stroke: "var(--surface-3)", strokeWidth: 1 }}
+            cursor={{ fill: "var(--surface-3)", opacity: 0.35, radius: 4 }}
           />
-          <Area
-            type="monotone"
+          <Bar
             dataKey="clicks"
-            stroke="#3b82f6"
-            strokeWidth={2}
-            fillOpacity={1}
-            fill="url(#clickGradient)"
+            fill="#3b82f6"
+            radius={[4, 4, 0, 0]}
+            maxBarSize={36}
           />
-        </AreaChart>
+        </BarChart>
       </ResponsiveContainer>
     </div>
   );
@@ -84,8 +79,8 @@ function CustomTooltip({ active, payload }: any) {
   if (active && payload && payload.length) {
     const item = payload[0].payload;
     return (
-      <div className="bg-surface-2 px-3 py-2 rounded-xl text-xs shadow-none border-0">
-        <p className="text-muted font-mono mb-1">{item.date}</p>
+      <div className="bg-surface-1 border border-subtle px-3 py-2 rounded-xl text-xs shadow-lg">
+        <p className="text-muted text-[11px] mb-0.5">{item.date}</p>
         <p className="font-semibold text-primary">
           {item.clicks.toLocaleString()} {item.clicks === 1 ? "click" : "clicks"}
         </p>

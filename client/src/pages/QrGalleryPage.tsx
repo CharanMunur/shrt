@@ -27,19 +27,19 @@ export function QrGalleryPage() {
     <div className="space-y-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight">QR Codes</h1>
-          <p className="text-xs text-alt mt-1">Instant QR codes for all your active short links.</p>
+          <h1 className="text-2xl sm:text-3xl font-semibold">QR Codes</h1>
+          <p className="text-xs text-secondary mt-1">High-resolution QR codes for all your active short links.</p>
         </div>
 
         <Link to="/dashboard/shorten" className="btn btn-primary text-xs self-start sm:self-auto">
-          <PlusCircle className="w-4 h-4" />
+          <PlusCircle className="w-3.5 h-3.5" />
           <span>New short link</span>
         </Link>
       </div>
 
       {loading ? (
-        <div className="py-20 flex flex-col items-center justify-center gap-3 text-alt text-xs">
-          <Loader2 className="w-5 h-5 animate-spin text-primary" />
+        <div className="py-20 flex flex-col items-center justify-center gap-2 text-secondary text-xs">
+          <Loader2 className="w-4 h-4 animate-spin text-primary" />
           <span>Loading QR codes...</span>
         </div>
       ) : links.length === 0 ? (
@@ -50,19 +50,21 @@ export function QrGalleryPage() {
           </Link>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
           {links.map((link) => (
-            <div key={link._id} className="card-minimal flex flex-col justify-between">
+            <div key={link._id} className="card-minimal flex flex-col justify-between hover:border-text-primary/20 transition-all">
               <div>
                 <div className="flex items-center justify-between mb-3">
-                  <span className="font-mono font-semibold text-xs text-primary">/{link.code}</span>
-                  <span className="text-[11px] text-muted">{link.clicksCount} clicks</span>
+                  <span className="font-semibold text-xs text-primary">/{link.code}</span>
+                  <span className="text-[11px] text-muted bg-surface-2 border border-subtle px-2 py-0.5 rounded-md">
+                    {link.clicksCount} clicks
+                  </span>
                 </div>
 
-                <p className="text-xs text-muted truncate mb-4 font-mono">{link.destinationUrl}</p>
+                <p className="text-xs text-muted truncate mb-4">{link.destinationUrl}</p>
               </div>
 
-              <div className="pt-4 flex items-center justify-between gap-2 border-t-0">
+              <div className="pt-4 flex items-center justify-between gap-2 border-t border-subtle">
                 <button
                   type="button"
                   onClick={() => handleCopy(link.code, link.shortUrl)}

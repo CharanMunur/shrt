@@ -65,7 +65,7 @@ export function DashboardOverviewPage() {
       });
       setCreatedLink(res.link);
       setQuickUrl("");
-      fetchData(); // Refresh list and counters
+      fetchData();
     } catch (err: any) {
       alert(err.message || "Failed to create short link.");
     } finally {
@@ -75,31 +75,31 @@ export function DashboardOverviewPage() {
 
   if (loading) {
     return (
-      <div className="py-24 flex items-center justify-center text-sm text-alt gap-3">
-        <Loader2 className="w-5 h-5 animate-spin text-primary" />
-        <span>Loading dashboard overview...</span>
+      <div className="py-24 flex items-center justify-center text-xs text-secondary gap-2">
+        <Loader2 className="w-4 h-4 animate-spin text-primary" />
+        <span>Loading overview...</span>
       </div>
     );
   }
 
   return (
-    <div className="space-y-8">
-      {/* Header */}
+    <div className="space-y-7">
+      {/* Page Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-semibold tracking-tight">Overview</h1>
-          <p className="text-xs text-alt mt-1">Live metrics and link performance across your account.</p>
+          <h1 className="text-2xl sm:text-3xl font-semibold">Overview</h1>
+          <p className="text-xs text-secondary mt-1">Live traffic metrics and link activity across your account.</p>
         </div>
 
         <Link to="/dashboard/shorten" className="btn btn-primary text-xs self-start sm:self-auto">
-          <PlusCircle className="w-4 h-4" />
+          <PlusCircle className="w-3.5 h-3.5" />
           <span>New short link</span>
         </Link>
       </div>
 
       {/* Quick Shorten Bar */}
       <div className="card-minimal">
-        <form onSubmit={handleQuickShorten} className="flex flex-col sm:flex-row gap-2">
+        <form onSubmit={handleQuickShorten} className="flex flex-col sm:flex-row gap-2.5">
           <input
             type="url"
             required
@@ -115,10 +115,10 @@ export function DashboardOverviewPage() {
         </form>
 
         {createdLink && (
-          <div className="mt-4 p-3 bg-surface-2 rounded-xl flex items-center justify-between text-xs animate-in fade-in">
+          <div className="mt-4 p-3 bg-surface-2 border border-subtle rounded-xl flex items-center justify-between text-xs animate-in fade-in">
             <div className="flex items-center gap-2 overflow-hidden">
-              <span className="text-muted">Short link:</span>
-              <span className="font-mono font-medium text-primary truncate">{createdLink.shortUrl}</span>
+              <span className="text-muted text-[11px]">Short URL:</span>
+              <span className="font-medium text-primary truncate">{createdLink.shortUrl}</span>
             </div>
             <div className="flex items-center gap-2">
               <button
@@ -127,13 +127,13 @@ export function DashboardOverviewPage() {
                 className="btn btn-secondary text-xs py-1 px-2.5"
               >
                 {copiedCode === createdLink.code ? <Check className="w-3 h-3 text-emerald-500" /> : <Copy className="w-3 h-3" />}
-                {copiedCode === createdLink.code ? "Copied" : "Copy"}
+                <span>{copiedCode === createdLink.code ? "Copied" : "Copy"}</span>
               </button>
               <button
                 type="button"
                 onClick={() => setSelectedQrCode(createdLink.code)}
                 className="btn btn-secondary text-xs py-1 px-2.5"
-                title="View QR"
+                title="View QR Code"
               >
                 <QrCode className="w-3 h-3" />
               </button>
@@ -164,12 +164,12 @@ export function DashboardOverviewPage() {
           icon={<TrendingUp className="w-4 h-4" />}
         />
         <StatCard
-          title="Peak Activity"
+          title="Peak Volume"
           value={stats?.summary?.peakHour ? `${stats.summary.peakHour.hour}:00 UTC` : "—"}
           subtitle={
             stats?.summary?.peakDay
               ? `${stats.summary.peakDay.clicks} clicks on ${stats.summary.peakDay.date}`
-              : "No clicks yet"
+              : "No recorded traffic"
           }
           icon={<TrendingUp className="w-4 h-4" />}
         />
@@ -177,12 +177,12 @@ export function DashboardOverviewPage() {
 
       {/* 7-Day Traffic Chart */}
       <div className="card-minimal">
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center justify-between mb-5">
           <div>
             <h3 className="text-sm font-semibold text-primary">Traffic Trend (Past 7 Days)</h3>
-            <p className="text-xs text-alt mt-0.5">Continuous daily click volume with zero-day padding</p>
+            <p className="text-xs text-secondary mt-0.5">Continuous daily click volume with zero-day padding</p>
           </div>
-          <Link to="/dashboard/analytics" className="text-xs text-alt hover:text-primary inline-flex items-center gap-1">
+          <Link to="/dashboard/analytics" className="text-xs text-secondary hover:text-primary inline-flex items-center gap-1 font-medium transition-colors">
             <span>Detailed analytics</span>
             <ArrowRight className="w-3 h-3" />
           </Link>
@@ -191,14 +191,14 @@ export function DashboardOverviewPage() {
         <TimeSeriesChart data={stats?.timeSeries || []} height={220} />
       </div>
 
-      {/* Recent Links Table */}
+      {/* Recent Links */}
       <div className="card-minimal">
         <div className="flex items-center justify-between mb-4">
           <div>
             <h3 className="text-sm font-semibold text-primary">Recent Short Links</h3>
-            <p className="text-xs text-alt mt-0.5">Most recently created links</p>
+            <p className="text-xs text-secondary mt-0.5">Most recently created short links</p>
           </div>
-          <Link to="/dashboard/links" className="text-xs text-alt hover:text-primary inline-flex items-center gap-1">
+          <Link to="/dashboard/links" className="text-xs text-secondary hover:text-primary inline-flex items-center gap-1 font-medium transition-colors">
             <span>View all links</span>
             <ArrowRight className="w-3 h-3" />
           </Link>
@@ -206,27 +206,29 @@ export function DashboardOverviewPage() {
 
         {links.length === 0 ? (
           <div className="py-12 text-center text-xs text-muted">
-            No short links yet. Shorten your first URL above to see metrics!
+            No short links yet. Shorten your first URL above to see metrics.
           </div>
         ) : (
-          <div className="divide-y-0 space-y-2">
+          <div className="space-y-2">
             {links.map((link) => (
               <div
                 key={link._id}
-                className="p-3 bg-surface-2 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-3"
+                className="p-3 bg-surface-2 border border-subtle rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 hover:border-text-primary/20 transition-all"
               >
                 <div className="overflow-hidden space-y-1">
                   <div className="flex items-center gap-2">
-                    <span className="font-mono font-semibold text-xs text-primary">/{link.code}</span>
+                    <span className="font-semibold text-xs text-primary">/{link.code}</span>
                     <span
-                      className={`text-[10px] px-2 py-0.5 rounded-full ${
-                        link.isActive ? "bg-emerald-500/10 text-emerald-500" : "bg-zinc-500/10 text-zinc-400"
+                      className={`text-[10px] px-2 py-0.5 rounded-full font-medium ${
+                        link.isActive
+                          ? "bg-emerald-500/10 text-emerald-600 dark:text-emerald-400"
+                          : "bg-zinc-500/10 text-zinc-500"
                       }`}
                     >
                       {link.isActive ? "Active" : "Disabled"}
                     </span>
                     {link.hasPassword && (
-                      <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-surface-3 text-alt">
+                      <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-surface-3 text-secondary font-medium">
                         Protected
                       </span>
                     )}
@@ -235,15 +237,15 @@ export function DashboardOverviewPage() {
                 </div>
 
                 <div className="flex items-center gap-3 shrink-0 self-end sm:self-center">
-                  <div className="text-right text-xs">
-                    <span className="font-mono font-medium text-primary">{link.clicksCount}</span>
+                  <div className="text-right text-xs bg-surface-1 px-2.5 py-1 rounded-lg border border-subtle">
+                    <span className="font-semibold text-primary">{link.clicksCount}</span>
                     <span className="text-muted ml-1 text-[11px]">clicks</span>
                   </div>
 
                   <button
                     type="button"
                     onClick={() => handleCopy(link.code, link.shortUrl)}
-                    className="w-8 h-8 rounded-full bg-surface-3 text-alt hover:text-primary flex items-center justify-center transition-colors"
+                    className="w-8 h-8 rounded-lg bg-surface-1 border border-subtle text-secondary hover:text-primary hover:bg-surface-3 flex items-center justify-center transition-colors"
                     title="Copy short URL"
                   >
                     {copiedCode === link.code ? (
@@ -256,7 +258,7 @@ export function DashboardOverviewPage() {
                   <button
                     type="button"
                     onClick={() => setSelectedQrCode(link.code)}
-                    className="w-8 h-8 rounded-full bg-surface-3 text-alt hover:text-primary flex items-center justify-center transition-colors"
+                    className="w-8 h-8 rounded-lg bg-surface-1 border border-subtle text-secondary hover:text-primary hover:bg-surface-3 flex items-center justify-center transition-colors"
                     title="QR Code"
                   >
                     <QrCode className="w-3.5 h-3.5" />
@@ -264,7 +266,7 @@ export function DashboardOverviewPage() {
 
                   <Link
                     to={`/dashboard/analytics/${link.code}`}
-                    className="w-8 h-8 rounded-full bg-surface-3 text-alt hover:text-primary flex items-center justify-center transition-colors"
+                    className="w-8 h-8 rounded-lg bg-surface-1 border border-subtle text-secondary hover:text-primary hover:bg-surface-3 flex items-center justify-center transition-colors"
                     title="View Analytics"
                   >
                     <ArrowRight className="w-3.5 h-3.5" />
@@ -276,7 +278,6 @@ export function DashboardOverviewPage() {
         )}
       </div>
 
-      {/* QR Code Modal */}
       <QrModal code={selectedQrCode} onClose={() => setSelectedQrCode(null)} />
     </div>
   );

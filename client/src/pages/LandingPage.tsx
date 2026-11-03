@@ -27,7 +27,7 @@ export function LandingPage() {
       <main className="flex-1 max-w-6xl mx-auto px-6 py-16 md:py-24 w-full">
         {/* Hero Section per minimal-skill guidelines */}
         <section className="text-center max-w-3xl mx-auto mb-24">
-          <h1 className="text-4xl sm:text-6xl font-semibold tracking-tight mb-6">
+          <h1 className="text-4xl sm:text-6xl font-semibold mb-6">
             Make every link <span className="text-alt">go further.</span>
           </h1>
           <p className="text-base sm:text-lg text-alt max-w-xl mx-auto mb-10 leading-relaxed">
@@ -116,7 +116,7 @@ export function LandingPage() {
 
       <footer className="w-full bg-canvas py-8 text-center text-xs text-muted">
         <div className="max-w-6xl mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p>Thoughtfully brief. © Shrtn</p>
+          <p>Thoughtfully brief. © shrt</p>
           <p className="text-muted">MongoDB · Express · React · Node.js</p>
         </div>
       </footer>

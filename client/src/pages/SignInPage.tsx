@@ -47,17 +47,17 @@ export function SignInPage() {
       <div className="max-w-sm w-full mx-auto my-12">
         <div className="card-minimal">
           <h1 className="text-2xl font-semibold mb-2 text-primary">Sign in</h1>
-          <p className="text-xs text-alt mb-6">Enter your username and password to continue.</p>
+          <p className="text-xs text-secondary mb-6">Enter your username and password to continue.</p>
 
           {error && (
-            <div className="bg-rose-500/10 text-rose-500 text-xs p-3 rounded-xl mb-4 font-medium">
+            <div className="bg-rose-500/10 border border-rose-500/20 text-rose-600 dark:text-rose-400 text-xs p-3 rounded-xl mb-4 font-medium">
               {error}
             </div>
           )}
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-xs font-medium text-alt mb-1.5" htmlFor="username">
+              <label className="block text-xs font-medium text-secondary mb-1.5" htmlFor="username">
                 Username
               </label>
               <input
@@ -73,7 +73,7 @@ export function SignInPage() {
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-alt mb-1.5" htmlFor="password">
+              <label className="block text-xs font-medium text-secondary mb-1.5" htmlFor="password">
                 Password
               </label>
               <div className="relative">
@@ -110,7 +110,7 @@ export function SignInPage() {
             </button>
           </form>
 
-          <div className="mt-6 pt-6 border-t-0 text-center text-xs text-alt">
+          <div className="mt-6 pt-6 border-t border-subtle text-center text-xs text-secondary">
             Don’t have an account?{" "}
             <Link to="/signup" className="text-primary font-semibold hover:underline">
               Create an account
@@ -120,7 +120,7 @@ export function SignInPage() {
       </div>
 
       <footer className="text-center text-xs text-muted max-w-5xl mx-auto w-full">
-        Shrtn · Clean links, zero friction
+        shrt · Clean links, zero friction
       </footer>
     </div>
   );
