@@ -3,6 +3,7 @@ import { ClickEvent } from "../models/ClickEvent.js";
 import { Link } from "../models/Link.js";
 import { AnalyticsEventsQuery, AnalyticsQuery, ExportQuery } from "../validators/analytics.validator.js";
 import { convertToCsv } from "../lib/csv.js";
+import { env } from "../config/env.js";
 
 export class AnalyticsService {
   private getDateRange(query: AnalyticsQuery) {
@@ -166,6 +167,7 @@ export class AnalyticsService {
     return {
       // Direct fields expected by Analytics Page Guide
       shortCode: singleLinkDoc?.code || "all",
+      shortUrl: singleLinkDoc ? `${env.BASE_URL}/${singleLinkDoc.code}` : undefined,
       originalUrl: singleLinkDoc?.destinationUrl,
       totalClicks: totalPeriodClicks,
       clickGrowthPercent: changePercentage ?? 0,
