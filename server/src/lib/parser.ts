@@ -134,9 +134,9 @@ export function parseGeoLocation(ip?: string): { country: string; region: string
     return { country: "Unknown", region: "Unknown", city: "Unknown" };
   }
 
-  // Filter loopback or private ranges
+  // Filter loopback or private ranges - fallback to unknown
   if (ip === "::1" || ip === "127.0.0.1" || ip.startsWith("192.168.") || ip.startsWith("10.")) {
-    return { country: "Local", region: "Development", city: "Localhost" };
+    return { country: "Unknown", region: "Unknown", city: "Unknown" };
   }
 
   try {

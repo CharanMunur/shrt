@@ -141,7 +141,7 @@ export function formatCountryName(raw?: string): string {
     lower === "127.0.0.1" ||
     lower === "::1"
   ) {
-    return "Localhost";
+    return "Unknown";
   }
 
   if (trimmed.length === 2 && CODE_TO_COUNTRY_NAME[lower]) {
@@ -206,14 +206,18 @@ export function CountryFlag({
   const { code, isLocal } = resolveCountryCode(country);
   const displayTitle = title || country || "Country";
 
-  if (isLocal) {
+  if (isLocal || code === "xx" || !code) {
     return (
       <span
         title={displayTitle}
-        className={`inline-flex items-center justify-center gap-1 px-1.5 py-0.5 rounded-sm bg-surface-3 border border-subtle text-[10px] font-medium text-secondary shrink-0 ${className}`}
+        className={`inline-flex items-center justify-center shrink-0 overflow-hidden rounded-xs border border-subtle/80 shadow-2xs leading-none ${className}`}
+        style={{ verticalAlign: "middle" }}
       >
-        <Terminal className="w-2.5 h-2.5 text-accent" />
-        <span>LOC</span>
+        <span
+          className={`fi fi-xx ${squared ? "fis" : ""} block`}
+          style={{ fontSize: "13px" }}
+          aria-hidden="true"
+        />
       </span>
     );
   }

@@ -81,22 +81,77 @@ export class AnalyticsService {
       browserBreakdown,
       osBreakdown,
       deviceTypeBreakdown,
+      regionBreakdown,
+      cityBreakdown,
+      heatmapRaw,
+      lastClicksRaw,
     ] = await Promise.all([
       ClickEvent.countDocuments(matchCurrent),
       ClickEvent.countDocuments({ linkId: { $in: linkIds } }),
       isAllTime ? Promise.resolve(0) : ClickEvent.countDocuments(matchPrior),
       this.aggregateTimeSeries(matchCurrent, from, to),
       this.aggregatePeakHour(matchCurrent),
-      this.aggregateFieldBreakdown(matchCurrent, "$referrer", 10),
-      this.aggregateFieldBreakdown(matchCurrent, "$referrerCategory", 10),
-      this.aggregateFieldBreakdown(matchCurrent, "$utmSource", 10, true),
-      this.aggregateFieldBreakdown(matchCurrent, "$utmMedium", 10, true),
-      this.aggregateFieldBreakdown(matchCurrent, "$utmCampaign", 10, true),
-      this.aggregateFieldBreakdown(matchCurrent, "$country", 10),
-      this.aggregateFieldBreakdown(matchCurrent, "$browser", 10),
-      this.aggregateFieldBreakdown(matchCurrent, "$os", 10),
-      this.aggregateFieldBreakdown(matchCurrent, "$deviceType", 10),
+      this.aggregateFieldBreakdown(matchCurrent, "$referrer", 50),
+      this.aggregateFieldBreakdown(matchCurrent, "$referrerCategory", 50),
+      this.aggregateFieldBreakdown(matchCurrent, "$utmSource", 50, true),
+      this.aggregateFieldBreakdown(matchCurrent, "$utmMedium", 50, true),
+      this.aggregateFieldBreakdown(matchCurrent, "$utmCampaign", 50, true),
+      this.aggregateFieldBreakdown(matchCurrent, "$country", 50),
+      this.aggregateFieldBreakdown(matchCurrent, "$browser", 50),
+      this.aggregateFieldBreakdown(matchCurrent, "$os", 50),
+      this.aggregateFieldBreakdown(matchCurrent, "$deviceType", 50),
+      this.aggregateFieldBreakdown(matchCurrent, "$region", 50),
+      this.aggregateFieldBreakdown(matchCurrent, "$city", 50),
+      ClickEvent.aggregate([
+        { $match: matchCurrent },
+        {
+          $group: {
+            _id: {
+              day: { $dayOfWeek: "$clickedAt" },
+              hour: { $hour: "$clickedAt" },
+            },
+            count: { $sum: 1 },
+          },
+        },
+      ]),
+      ClickEvent.find(matchCurrent)
+        .sort({ clickedAt: -1 })
+        .limit(20)
+        .select("clickedAt country region city browser os deviceType referrer referrerCategory userAgent utmSource utmMedium utmCampaign")
+        .lean(),
     ]);
+
+    // Construct 7x24 weekly traffic heatmap
+    const trafficHeatmap = Array.from({ length: 7 }, () => Array(24).fill(0));
+    for (const item of heatmapRaw) {
+      const d = (item._id.day - 1 + 7) % 7; // 1=Sun (0), 7=Sat (6)
+      const h = item._id.hour;
+      if (d >= 0 && d < 7 && h >= 0 && h < 24) {
+        trafficHeatmap[d][h] = item.count;
+      }
+    }
+
+    // Convert breakdown arrays to Record<string, number> mappings
+    const toRecord = (items: { name: string; count: number }[]) => {
+      const rec: Record<string, number> = {};
+      for (const item of items) {
+        if (item.name && item.name !== "Unknown") {
+          rec[item.name] = item.count;
+        }
+      }
+      return rec;
+    };
+
+    const clicksByDate: Record<string, number> = {};
+    for (const d of dailyClicksRaw) {
+      clicksByDate[d.date] = d.clicks;
+    }
+
+    const activeDaysCount = dailyClicksRaw.filter((d) => d.clicks > 0).length;
+    const avgDailyClicks = activeDaysCount > 0 ? Math.round(totalPeriodClicks / activeDaysCount) : 0;
+    const peakTimeStr = peakHourRaw
+      ? `${peakHourRaw.hour}:00 - ${(peakHourRaw.hour + 1) % 24}:00 UTC`
+      : "No traffic";
 
     // Calculate percentage change avoiding division by zero
     let changePercentage: number | null = null;
@@ -109,6 +164,26 @@ export class AnalyticsService {
     }
 
     return {
+      // Direct fields expected by Analytics Page Guide
+      shortCode: singleLinkDoc?.code || "all",
+      originalUrl: singleLinkDoc?.destinationUrl,
+      totalClicks: totalPeriodClicks,
+      clickGrowthPercent: changePercentage ?? 0,
+      peakTime: peakTimeStr,
+      avgDailyClicks,
+      clicksByDate,
+      countryBreakdown: toRecord(countryBreakdown),
+      regionBreakdown: toRecord(regionBreakdown),
+      cityBreakdown: toRecord(cityBreakdown),
+      browserBreakdown: toRecord(browserBreakdown),
+      osBreakdown: toRecord(osBreakdown),
+      deviceBreakdown: toRecord(deviceTypeBreakdown),
+      referrerCategories: toRecord(categoryBreakdown),
+      referrerBreakdown: toRecord(referrerBreakdown),
+      trafficHeatmap,
+      lastClicks: lastClicksRaw,
+
+      // Retained fields for full backward-compatibility with other dashboard views
       period: {
         from: from.toISOString(),
         to: to.toISOString(),
