@@ -1,171 +1,182 @@
-# shrt
+<p align="center">
+  <img src="client/public/short-white.svg" alt="Shrtn logo" width="420" />
+</p>
 
-A production-grade URL shortener and click traffic analytics platform built on the MERN stack (MongoDB, Express, React, Node.js) with TypeScript.
+<p align="center">
+  A full-stack URL shortener and traffic analytics platform built with React, TypeScript, Express, and MongoDB.
+</p>
 
-shrt emphasizes direct redirection performance, non-cached live analytics aggregation, and a disciplined, borderless design system.
+<p align="center">
+  <img src="https://img.shields.io/badge/React-19-61DAFB?style=flat-square&logo=react&logoColor=black" alt="React 19" />
+  <img src="https://img.shields.io/badge/TypeScript-5-3178C6?style=flat-square&logo=typescript&logoColor=white" alt="TypeScript" />
+  <img src="https://img.shields.io/badge/Express-5-000000?style=flat-square&logo=express&logoColor=white" alt="Express 5" />
+  <img src="https://img.shields.io/badge/MongoDB-8-47A248?style=flat-square&logo=mongodb&logoColor=white" alt="MongoDB" />
+  <img src="https://img.shields.io/badge/Vite-6-646CFF?style=flat-square&logo=vite&logoColor=white" alt="Vite" />
+</p>
 
 ---
 
-## 1. System Architecture
+## Overview
+
+Shrtn makes it easy to create and manage short links while understanding how people use them. The React dashboard handles link management, QR codes, and traffic reports. An Express API manages accounts and link data, records click metadata, and redirects visitors directly to their destinations.
+
+The app is organized as an npm workspaces monorepo with a Vite client and a TypeScript server.
+
+## Architecture & Directory Layout
+
+| Component | Path | Description |
+|---|---|---|
+| **Client** | [`/client`](./client) | React 19, TypeScript, Vite, Tailwind CSS v4, Recharts dashboard |
+| **Server** | [`/server`](./server) | Express 5 API, TypeScript, Mongoose, session authentication, link redirects and analytics |
+| **Database** | MongoDB | Users, links, click events, counters, and server sessions |
 
 ```text
 Visitor / Account Holder
-        │
-        ├── HTTPS / Browser
-        │       └── React Single Page Application (Vite + Tailwind CSS)
-        │               └── JSON API requests with HttpOnly session cookies
-        │
-        └── Node.js + Express API
-                ├── Authentication & Account Services
-                ├── Link CRUD, QR Generation, & Validation
-                ├── Direct HTTP 302 Redirection (/:code)
-                ├── Asynchronous Click Event Capture (UA parsing, GeoIP, UTMs)
-                ├── Real-time MongoDB Aggregation Engine
-                └── MongoDB Database
-                        ├── users (Argon2id hashes, unique normalized usernames)
-                        ├── links (indexes on code and ownerId + createdAt)
-                        ├── clickEvents (compound index on linkId + clickedAt)
-                        └── sessions (TTL-indexed server sessions)
+        ├── React SPA (Vite)
+        │      └── JSON API requests with HttpOnly session cookies
+        └── Express API
+               ├── Authentication and account settings
+               ├── Link management and QR generation
+               ├── Direct HTTP 302 redirects
+               ├── Click metadata capture
+               └── MongoDB analytics aggregations
 ```
 
----
+## Core Capabilities
 
-## 2. Core Technical Constraints
+### Link management and redirects
 
-- **Strict No-Cache Policy**: API endpoints, dynamic HTML, and redirect routes return `Cache-Control: no-store, no-cache, must-revalidate`. Analytics are derived directly from persisted MongoDB events rather than cached snapshots or Redis counters.
-- **Direct Redirection**: Link resolution executes in Express and issues a single HTTP 302 redirect directly to the target destination without intermediary hops or client-side redirect scripts.
-- **Zero-Credential Logging & Privacy**: Raw IP addresses are not stored. Geolocation is resolved at ingestion to country and city granularity. Passwords and session secrets are never serialized in responses or logs.
-- **Argon2id Hashing**: User authentication relies exclusively on username and password verified via Argon2id with recommended memory and time cost parameters.
+- Create links with generated or custom short codes.
+- Set optional iOS and Android destinations, expiration dates, click limits, and password protection.
+- Disable, edit, and delete links from the dashboard.
+- Resolve active links with a direct HTTP 302 redirect.
+- Generate QR codes for short links.
 
----
+### Traffic analytics
 
-## 3. Data Models and Indexes
+- View account-level and per-link click totals and trends.
+- Explore time-series data and a weekly traffic heatmap.
+- Break down visits by referrer, country, region, city, browser, operating system, device, and UTM campaign fields.
+- Browse recent click events and export reports as CSV or JSON.
 
-### Users Collection (`users`)
-- `_id`: ObjectId
-- `username`: String (3-30 chars, alphanumeric, trimmed)
-- `normalizedUsername`: String (unique index, lowercase, trimmed)
-- `passwordHash`: String (Argon2id, select: false)
-- `preferences`: Object (`theme`: "light" | "dark" | "system")
-- `createdAt`, `updatedAt`: Timestamps
+### Accounts and security
 
-### Links Collection (`links`)
-- `_id`: ObjectId
-- `ownerId`: ObjectId (index on `{ ownerId: 1, createdAt: -1 }`)
-- `code`: String (unique index, lowercase, alphanumeric and hyphens)
-- `destinationUrl`: String (validated http/https scheme)
-- `iosUrl`, `androidUrl`: Optional String (device-specific target overrides)
-- `expiresAt`: Optional Date (automatic expiration gate)
-- `maxClicks`: Optional Number (click cap enforcement)
-- `passwordHash`: Optional String (Argon2id for password-protected links)
-- `isActive`: Boolean (default: true)
+- Register and sign in with username and password.
+- Store passwords using Argon2id and authenticate with server-side sessions in HttpOnly cookies.
+- Persist sessions in MongoDB and allow users to update their password and theme preference.
+- Apply request validation, rate limits, security headers, and no-cache response headers.
 
-### Click Events Collection (`clickEvents`)
-- `_id`: ObjectId
-- `linkId`: ObjectId (compound index on `{ linkId: 1, clickedAt: -1 }`)
-- `clickedAt`: Date (timestamp of visit)
-- `referrer`: String (hostname or "Direct")
-- `referrerCategory`: String ("direct", "search", "social", "email", "other")
-- `utmSource`, `utmMedium`, `utmCampaign`: Optional String (campaign tracking)
-- `country`, `region`, `city`: String (coarse geo metadata)
-- `browser`, `browserVersion`, `os`, `deviceType`: String (parsed from User-Agent)
+## Data Model
 
----
+- **Users**: Normalized unique username, Argon2id password hash, theme preference, and timestamps.
+- **Links**: Owner, unique code, destination and device routes, optional expiration and click limit, password hash, and active state.
+- **Click events**: Link, timestamp, referrer and category, UTM fields, coarse location, browser, operating system, and device type. Raw IP addresses are not stored.
+- **Sessions**: Express session records with MongoDB TTL cleanup.
 
-## 4. API Endpoints
+## API Overview
 
-### Authentication
-- `POST /api/v1/auth/register` — Register a username/password account
-- `POST /api/v1/auth/login` — Authenticate and start an HttpOnly session
-- `POST /api/v1/auth/logout` — Revoke session and clear cookies
-- `GET /api/v1/auth/me` — Retrieve active user identity and preferences
-- `PATCH /api/v1/users/me/password` — Change password (requires current password)
-- `PATCH /api/v1/users/me/preferences` — Persist theme preferences
+Authenticated endpoints use the `HttpOnly` session cookie.
 
-### Link Management
-- `GET /api/v1/links` — Paginated list of owned links with live derived click counts
-- `POST /api/v1/links` — Create short link with optional rules (code, devices, expiry, password)
-- `GET /api/v1/links/:code` — Retrieve link metadata
-- `PATCH /api/v1/links/:code` — Update destination, device routes, limits, or state
-- `DELETE /api/v1/links/:code` — Permanently delete short link and associated click events
-- `GET /api/v1/links/:code/qr` — Generate high-resolution PNG data URL and raw SVG QR code
+| Area | Routes | Purpose |
+|---|---|---|
+| Health | `GET /api/health` | API and database status |
+| Auth | `/api/v1/auth/register`, `/login`, `/logout`, `/me` | Account registration and session management |
+| User | `PATCH /api/v1/users/me/password`, `/preferences` | Update password or preferences |
+| Links | `/api/v1/links` | List, create, read, update, and delete owned links; generate QR codes |
+| Analytics | `/api/v1/analytics` and `/api/v1/links/:code/analytics` | Aggregate traffic, inspect events, and export reports |
+| Redirect | `GET /:code`, `POST /:code/unlock` | Resolve a short link or unlock a protected link |
 
-### Analytics & Reporting
-- `GET /api/v1/analytics` — Account-level aggregate traffic metrics and breakdowns
-- `GET /api/v1/links/:code/analytics` — Link-specific metrics, time-series volume, and breakdowns
-- `GET /api/v1/links/:code/analytics/events` — Paginated click stream rows
-- `GET /api/v1/links/:code/analytics/export` — Filtered CSV or JSON export
-
-### Redirection Handler
-- `GET /:code` — Direct resolution, metadata extraction, event ingestion, and HTTP 302 redirect
-- `POST /:code/unlock` — Password verification for protected links
-
----
-
-## 5. Getting Started
+## Development Setup
 
 ### Prerequisites
-- Node.js 20 or later
-- MongoDB 7.0 or later (running locally on port 27017 or remote URI)
 
-### Installation
-Clone the repository and install all workspace dependencies:
+- Node.js 20 or later and npm
+- MongoDB for persistent local data (optional for development; the server can start an in-memory MongoDB instance)
+
+### Install
+
 ```bash
-git clone git@github.com:CharanMunur/shrt.git
-cd shrt
+git clone https://github.com/CharanMunur/shrtn.git
+cd shrtn
 npm install
 ```
 
-### Environment Configuration
-Copy `.env.example` to `.env`:
+### Configure the server
+
+Copy the example environment file:
+
+```bash
+cp server/.env.example server/.env
+```
+
+Set `MONGODB_URI` to use a persistent MongoDB database. If it is left empty, or the configured database cannot be reached, the server attempts to use an in-memory MongoDB instance. Configure these values for a local setup:
+
 ```env
 PORT=4000
 NODE_ENV=development
-CLIENT_ORIGIN=http://localhost:5173,http://localhost:5174
+CLIENT_ORIGIN=http://localhost:5173
 BASE_URL=http://localhost:4000
-MONGODB_URI=mongodb://127.0.0.1:27017/shrt
-SESSION_SECRET=a-secure-random-secret-key-at-least-32-chars
+MONGODB_URI=mongodb://127.0.0.1:27017/shrtn
+SESSION_SECRET=replace-with-a-random-secret-of-at-least-32-characters
 ```
 
-### Running Locally
-To launch both the server and client concurrently:
+Use a unique secret outside local development. `CLIENT_ORIGIN` accepts a comma-separated list of allowed frontend origins.
+
+### Run the app
+
+Start both services from the repository root:
+
 ```bash
 npm run dev
 ```
 
-- Web Client: `http://localhost:5173`
-- API and Redirect Host: `http://localhost:4000`
+- Client: `http://localhost:5173`
+- API and short-link redirects: `http://localhost:4000`
+- Health endpoint: `http://localhost:4000/api/health`
 
-### Seeding Demonstration Data
-To seed sample links and realistic click events:
+The Vite development server proxies `/api` requests to the local Express server.
+
+To run services separately:
+
+```bash
+npm run dev -w server
+npm run dev -w client
+```
+
+### Seed demo data
+
 ```bash
 npm run seed -w server
 ```
-Default seeded credentials:
-- Username: `demo`
-- Password: `password123`
 
----
+The seed script creates sample links and click events. Its default demo login is `demo` / `password123`; use it only with local development data.
 
-## 6. Testing and Verification
+## Build and Run
 
-Run the end-to-end integration test suite:
+Build both workspaces:
+
+```bash
+npm run build
+```
+
+Start the compiled server:
+
+```bash
+npm start
+```
+
+Build or preview the frontend independently with `npm run build -w client` or `npm run preview -w client`.
+
+## Tests
+
+Run the server end-to-end test suite:
+
 ```bash
 npm test
 ```
 
-The automated test suite verifies:
-1. Health and database connectivity checks
-2. Registration, session issuance, and duplicate rejection
-3. Profile retrieval and Argon2id hash non-exposure
-4. Custom code creation and reserved route collision blocking
-5. HTTP 302 redirection with `Cache-Control: no-store`
-6. Click event recording and time-series aggregation with continuous zero-day padding
-7. CSV export headers and data integrity
-8. QR code generation (SVG and PNG formats)
+The suite covers health and database connectivity, authentication, link validation and redirects, analytics aggregation, exports, and QR code generation.
 
----
+## License
 
-## 7. License
-
-MIT License. Designed and maintained for production reliability.
+MIT. See [LICENSE](./LICENSE) for details.
